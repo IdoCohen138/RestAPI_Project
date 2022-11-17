@@ -12,6 +12,11 @@ public class SlackChannel {
         this.channelName = channelName;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return (this.channelName.equals(((SlackChannel)obj).channelName)) && (this.webhook.equals(((SlackChannel)obj).webhook));
+    }
+
     public void setStatus() {
         if (this.status.equals(Enum.status.Enable))
             this.status = Enum.status.Disable;

@@ -5,5 +5,9 @@ public class Enum {
         Enable,
         Disable
     }
+    public enum operationStatus{
+        success,
+        failure
+    }
 
 }
