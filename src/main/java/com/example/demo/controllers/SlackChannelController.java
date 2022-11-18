@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class SlackChannelController {
 
     private final ArrayList<SlackChannel> channels = new ArrayList<>();
 
-    //TODO: validate parametrs in all endpoints
+    //TODO: validate parameters in all endpoints
 
 
     @PostMapping("/create")
@@ -67,10 +68,26 @@ public class SlackChannelController {
     }
 
     @GetMapping("/getChannels")
-    public @ResponseBody ResponseEntity<?> getChannels(){
-        if (channels.size()>0)
-            return new ResponseEntity<>(channels, HttpStatus.OK);
-        return new ResponseEntity<>("The channel has been deleted successful.", HttpStatus.BAD_REQUEST);
+    public @ResponseBody ResponseEntity<?> getChannels(@RequestParam Map<String, String> json){
+        if (channels.size()==0)
+            return new ResponseEntity<>("There are no channels to return.", HttpStatus.BAD_REQUEST);
+
+        //assume that have 3 types of filtering: "Enable", "Disable" and "none".
+        String filter_Enable_Disable_None = json.get("filtering");
+        ArrayList<SlackChannel> filterArray = sortArrayByFiltering(filter_Enable_Disable_None);
+        return new ResponseEntity<>(filterArray, HttpStatus.OK);
+
+    }
+
+    private ArrayList<SlackChannel> sortArrayByFiltering(String filter) {
+        if (filter.equals("None"))
+            return channels;
+        ArrayList<SlackChannel> filterArray = new ArrayList<>();
+        for (SlackChannel channel : channels) {
+            if (channel.getStatus().toString().equals(filter))
+                filterArray.add(channel);
+        }
+        return filterArray;
     }
 
 
