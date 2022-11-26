@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.controllers.SlackChannelController;
+import com.example.demo.businessLayer.SlackChannelController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

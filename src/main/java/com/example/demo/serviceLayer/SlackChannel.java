@@ -1,10 +1,10 @@
-package com.example.demo.models;
+package com.example.demo.serviceLayer;
 
 import com.example.demo.Enum;
 
 public class SlackChannel {
-    private String webhook;
-    private String channelName;
+    private final String webhook;
+    private final String channelName;
     private Enum.status status = Enum.status.Enable;
 
     public SlackChannel(String webhook, String channelName) {

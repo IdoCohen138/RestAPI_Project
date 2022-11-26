@@ -1,15 +1,13 @@
 
-package com.example.demo.controllers;
+package com.example.demo.businessLayer;
 import com.example.demo.Enum;
-import com.example.demo.models.SlackChannel;
+import com.example.demo.serviceLayer.SlackChannel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 public class SlackChannelController {
