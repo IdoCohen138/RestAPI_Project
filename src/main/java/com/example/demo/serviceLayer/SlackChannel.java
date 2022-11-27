@@ -1,38 +1,23 @@
 package com.example.demo.serviceLayer;
 
 import com.example.demo.Enum;
+import lombok.*;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Pattern;
+
+@Data
+@Getter @Setter @EqualsAndHashCode
 public class SlackChannel {
-    private final String webhook;
-    private final String channelName;
-    private Enum.status status = Enum.status.Enable;
 
-    public SlackChannel(String webhook, String channelName) {
-        this.webhook = webhook;
-        this.channelName = channelName;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (this.channelName.equals(((SlackChannel)obj).channelName)) && (this.webhook.equals(((SlackChannel)obj).webhook));
-    }
+    @NotBlank(message = "webhook is required") private String webhook;
+    @EqualsAndHashCode.Exclude private String channelName;
+    @EqualsAndHashCode.Exclude private Enum.status status = Enum.status.Enable;
 
     public void setStatus() {
         if (this.status.equals(Enum.status.Enable))
             this.status = Enum.status.Disable;
         else
             this.status = Enum.status.Enable;
-    }
-
-    public Enum.status getStatus() {
-        return status;
-    }
-
-    public String getWebhook() {
-        return webhook;
-    }
-
-    public String getChannelName() {
-        return channelName;
     }
 }
