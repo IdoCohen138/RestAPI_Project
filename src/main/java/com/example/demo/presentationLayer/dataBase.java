@@ -3,6 +3,8 @@ import com.example.demo.Enum;
 import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 import com.example.demo.serviceLayer.SlackChannel;
+import com.example.demo.serviceLayer.repository;
+
 import java.util.ArrayList;
 
 public class dataBase implements repository {

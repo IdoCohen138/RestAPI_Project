@@ -10,5 +10,5 @@ public interface channelRepository {
     void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
     void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
     SlackChannel getSpecificChannel(String webhook) throws ChannelNotExitsInDataBaseException;
-    ArrayList getChannels(String filter);
+    ArrayList<?> getChannels(String filter);
 }

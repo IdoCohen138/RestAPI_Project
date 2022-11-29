@@ -3,7 +3,7 @@ package com.example.demo.serviceLayer;
 import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 import com.example.demo.presentationLayer.dataBase;
-import com.example.demo.presentationLayer.repository;
+
 import java.util.ArrayList;
 
 public class SlackChannelController implements channelRepository{
