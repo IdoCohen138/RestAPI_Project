@@ -1,21 +1,20 @@
-package com.application.serviceLayer;
+package com.example.demo.serviceLayer;
 
-import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.application.presentationLayer.DataAccess;
-
+import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import com.example.demo.presentationLayer.dataBase;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class SlackChannelController implements ChannelRepository {
-    Repository repository = new DataAccess();
-    private SlackIntegration si = new SlackIntegration();
+public class SlackChannelController implements channelRepository{
+    repository dataBaseInterface = new dataBase();
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
-        repository.createChannel(slackChannel);
+        dataBaseInterface.createChannel(slackChannel);
+        SlackIntegration si = new SlackIntegration("New channel has been created");
         try{
-            si.sendPeriodicMessage(slackChannel);
+            si.sendMessage(slackChannel);
         } catch (IOException e) {
             System.out.println("Cant send Slack Message");
         }
@@ -23,15 +22,11 @@ public class SlackChannelController implements ChannelRepository {
 
     @Override
     public void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel modifyChannel = repository.updateChannel(slackChannel);
-        if (modifyChannel.getStatus().equals(EnumStatus.DISABLED)){
-            modifyChannel.setStatus(EnumStatus.ENABLED);
-        }
-        else {
-            modifyChannel.setStatus(EnumStatus.DISABLED);
-        }
+        SlackChannel modifyChannel = dataBaseInterface.updateChannel(slackChannel);
+        modifyChannel.setStatus();
+        SlackIntegration si = new SlackIntegration("Channel's status has been updated");
         try{
-            this.si.sendStatusMessage(slackChannel);
+            si.sendMessage(slackChannel);
         } catch (IOException e) {
             System.out.println("Message cant sent to Slack");
         }
@@ -39,17 +34,24 @@ public class SlackChannelController implements ChannelRepository {
 
     @Override
     public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        repository.deleteChannel(slackChannel);
+        dataBaseInterface.deleteChannel(slackChannel);
+        SlackIntegration si = new SlackIntegration("Channel has been deleted");
+        try{
+            si.sendMessage(slackChannel);
+        } catch (IOException e) {
+            System.out.println("Message cant sent to Slack");
+        }
+
     }
 
     @Override
     public SlackChannel getSpecificChannel(String webhook) throws ChannelNotExitsInDataBaseException {
-        return repository.getSpecificChannel(webhook);
+        return dataBaseInterface.getSpecificChannel(webhook);
     }
 
     @Override
     public ArrayList<?> getChannels(String filter) {
-        return repository.getChannels(filter);
+        return dataBaseInterface.getChannels(filter);
     }
 
 }
