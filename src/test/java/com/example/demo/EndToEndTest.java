@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,8 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EndToEndTest {
@@ -25,6 +24,9 @@ public class EndToEndTest {
     HttpHeaders headers;
     @LocalServerPort
     private int port;
+    private Client myClient;
+    String webhook="{\"webhook\":\"NULLwebhhok\",\"channelName\":\"chanellname\"}";
+
 
     @BeforeEach
     public void Setup() {
@@ -33,7 +35,66 @@ public class EndToEndTest {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        myClient=new Client(url,headers,restTemplate);
     }
+
+
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void PostTest(String requestJson) {
+        Assertions.assertEquals(myClient.Post(requestJson).getStatusCode(),HttpStatus.OK);
+        myClient.Delete(requestJson);
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void PutTest(String requestJson) {
+        myClient.Post(requestJson);
+        if(myClient.Put(requestJson).getStatusCode().equals(HttpStatus.OK)) {
+            myClient.Delete(requestJson);
+        }
+    }
+@Test
+    public void Put_fail_Test() {
+        Assertions.assertThrows(HttpClientErrorException.class, () -> {
+            myClient.Put(webhook);
+        });
+    }
+
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void DeleteTest(String requestJson) {
+        if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
+            Assertions.assertEquals(myClient.Delete(requestJson).getStatusCode(),HttpStatus.OK);
+    }}
+  @Test
+    public void DeleteTest_fail() {
+        Assertions.assertThrows(HttpClientErrorException.class, () -> {
+            myClient.Delete(webhook);});
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void GetSpecificTest(String requestJson,String Url) {
+        if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
+        Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+Url).getStatusCode(),HttpStatus.OK);
+            myClient.Delete(requestJson);
+
+        }}
+
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void GetByStatus_enable_disable_Test(String requestJson,String channelname,String status) {
+        if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
+            Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+status+"Enable").getStatusCode(),HttpStatus.OK);
+            myClient.Put(requestJson);
+            Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+status+"Disable").getStatusCode(),HttpStatus.OK);
+            myClient.Delete(requestJson);}
+
+        }
+
 
     private static Stream<Arguments> webhooks() {
         return Stream.of(
@@ -43,83 +104,6 @@ public class EndToEndTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void Post_success_Test(String requestJson) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        Assertions.assertEquals(response.getStatusCode(),HttpStatus.OK);
-        restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
-
-    }
-
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void PutTest(String requestJson) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        if(response.getStatusCode().equals(HttpStatus.OK)) {
-            this.restTemplate.put(url, entity);
-            restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
-        }
-    }
-@Test
-    public void Put_fail_Test() {
-        String webhook="{\"webhook\":\"NULLwebhhok\",\"channelName\":\"chanellname\"}";
-        HttpEntity<String> entity = new HttpEntity<>(webhook, headers);
-
-    Assertions.assertThrows(HttpClientErrorException.class, () -> {
-        restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-    });
-    }
-
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void DeleteTest(String requestJson) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        if(response.getStatusCode().equals(HttpStatus.OK)) {
-            ResponseEntity<Void> resp = restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
-            Assertions.assertEquals(resp.getStatusCode(),HttpStatus.OK);
-        }
-
-    }
-    public void DeleteTest_fail() {
-        String webhook="{\"webhook\":\"NULLwebhhok\",\"channelName\":\"chanellname\"}";
-        HttpEntity<String> entity = new HttpEntity<>(webhook, headers);
-        Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);});
-
-    }
-
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void GetSpecificTest(String requestJson,String Url) {
-        HttpEntity<String> entity= new HttpEntity<>(requestJson, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        if(response.getStatusCode().equals(HttpStatus.OK)) {
-        String withParmUrl=url+Url;
-        ResponseEntity<String> responseEntity=this.restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
-        Assertions.assertEquals(responseEntity.getStatusCode(),HttpStatus.OK);
-        restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
-    }}
-
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void GetByStatus_enable_disable_Test(String requestJson,String channelname,String status) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        if(response.getStatusCode().equals(HttpStatus.OK)) {
-            String withParmUrl=url+status+"Enable";
-            ResponseEntity<String> responseEntity=this.restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
-            Assertions.assertEquals(responseEntity.getStatusCode(),HttpStatus.OK);
-
-            restTemplate.put(url, entity, String.class);
-            withParmUrl=url+status+"Disable";
-            responseEntity=this.restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
-            Assertions.assertEquals(responseEntity.getStatusCode(),HttpStatus.OK);
-
-            restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
-    }}
-
 }
+
+
