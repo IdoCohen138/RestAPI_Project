@@ -49,6 +49,13 @@
 			<artifactId>javax.el </artifactId>
 			<version>3.0.1-b11 </version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.slack.api/slack-api-client -->
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>slack-api-client</artifactId>
+			<version>1.27.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
