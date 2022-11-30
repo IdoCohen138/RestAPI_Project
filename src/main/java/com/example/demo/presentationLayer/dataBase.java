@@ -7,7 +7,7 @@ import com.example.demo.serviceLayer.repository;
 
 import java.util.ArrayList;
 
-public class dataBase implements repository {
+public class  dataBase implements repository {
 
     private final ArrayList<SlackChannel> channels = new ArrayList<>();
 
