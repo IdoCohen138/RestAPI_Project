@@ -1,5 +1,4 @@
-package com.example.demo.serviceLayer;
-import com.example.demo.Enum;
+package com.application.serviceLayer;
 import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
@@ -17,7 +16,7 @@ public class SlackIntegration {
         Slack slack = Slack.getInstance();
         String webhookUrl = sc.getWebhook();
         Payload payload = Payload.builder().text("You have no vulnerabilities").build();
-        while (sc.getStatus().equals(Enum.status.Enable)) {
+        while (sc.getStatus().equals(EnumStatus.ENABLED)) {
             if (this.lt.getHour() == 10) {
                 WebhookResponse response = slack.send(webhookUrl, payload);
                 System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)

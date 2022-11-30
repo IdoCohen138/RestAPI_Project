@@ -4,14 +4,21 @@ import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBas
 import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 import com.application.presentationLayer.DataAccess;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class SlackChannelController implements ChannelRepository {
     Repository repository = new DataAccess();
-
+    private SlackIntegration si = new SlackIntegration();
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         repository.createChannel(slackChannel);
+        try{
+            si.sendPeriodicMessage(slackChannel);
+        } catch (IOException e) {
+            System.out.println("Cant send Slack Message");
+        }
     }
 
     @Override
@@ -22,6 +29,11 @@ public class SlackChannelController implements ChannelRepository {
         }
         else {
             modifyChannel.setStatus(EnumStatus.DISABLED);
+        }
+        try{
+            this.si.sendStatusMessage(slackChannel);
+        } catch (IOException e) {
+            System.out.println("Message cant sent to Slack");
         }
     }
 
