@@ -1,4 +1,4 @@
-package com.example.demo.presentationLayer.Exceptions;
+package presentationLayer.Exceptions;
 
 public class ChannelAlreadyExitsInDataBaseException extends Exception{
     public ChannelAlreadyExitsInDataBaseException(String message) {

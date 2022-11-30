@@ -1,24 +1,21 @@
-package com.example.demo.businessLayer;
-import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.example.demo.serviceLayer.SlackChannel;
-import com.example.demo.serviceLayer.SlackChannelController;
-import com.example.demo.serviceLayer.channelRepository;
+package businessLayer;
+import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import serviceLayer.SlackChannel;
+import serviceLayer.SlackChannelController;
+import serviceLayer.channelRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
-import java.util.Map;
 
 @RestController
 @Validated
-public class endPoints {
+public class EndPoints {
 
     channelRepository channelInterface = new SlackChannelController();
 

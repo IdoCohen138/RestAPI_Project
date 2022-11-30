@@ -1,8 +1,8 @@
-package com.example.demo.serviceLayer;
+package serviceLayer;
 
-import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.example.demo.presentationLayer.dataBase;
+import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import presentationLayer.dataBase;
 
 import java.util.ArrayList;
 

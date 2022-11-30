@@ -1,4 +1,4 @@
-package com.example.demo.businessLayer;
+package businessLayer;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

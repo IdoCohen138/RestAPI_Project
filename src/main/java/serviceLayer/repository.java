@@ -1,13 +1,9 @@
-package com.example.demo.serviceLayer;
+package serviceLayer;
 
-import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.example.demo.serviceLayer.SlackChannel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
+import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public interface repository {
 

@@ -1,9 +1,10 @@
-package com.example.demo.presentationLayer;
-import com.example.demo.Enum;
-import com.example.demo.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.example.demo.serviceLayer.SlackChannel;
-import com.example.demo.serviceLayer.repository;
+package presentationLayer;
+
+import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import serviceLayer.SlackChannel;
+import serviceLayer.repository;
+import serviceLayer.*;
 
 import java.util.ArrayList;
 
@@ -32,7 +33,7 @@ public class dataBase implements repository {
 
     @Override
     public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        if (deleteChannelFromData(slackChannel).equals(Enum.operationStatus.failure))
+        if (deleteChannelFromData(slackChannel).equals(EnumOperation.FAILURE))
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
     }
 
@@ -67,13 +68,13 @@ public class dataBase implements repository {
         return null;
     }
 
-    public Enum.operationStatus deleteChannelFromData(SlackChannel slackChannel){
+    public EnumOperation deleteChannelFromData(SlackChannel slackChannel){
         SlackChannel toRemove = getChannel(slackChannel);
         if (toRemove != null) {
             channels.remove(toRemove);
-            return Enum.operationStatus.success;
+            return EnumOperation.SUCCESS;
         }
-        return Enum.operationStatus.failure;
+        return EnumOperation.FAILURE;
     }
 
     public ArrayList<SlackChannel> sortArrayByFiltering(String filter) {
