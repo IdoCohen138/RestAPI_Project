@@ -1,4 +1,4 @@
-package serviceLayer;
+package com.application.serviceLayer;
 
 import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
@@ -11,12 +11,4 @@ public class SlackChannel {
     @EqualsAndHashCode.Exclude private String channelName;
     @EqualsAndHashCode.Exclude private EnumStatus status = EnumStatus.ENABLED;
 
-
-
-    public void setStatus() {
-        if (this.status.equals(EnumStatus.ENABLED))
-            this.status = EnumStatus.DISABLED;
-        else
-            this.status = EnumStatus.ENABLED;
-    }
 }

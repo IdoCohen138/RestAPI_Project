@@ -8,10 +8,10 @@
 		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.application</groupId>
-	<artifactId>application</artifactId>
+	<groupId>com.starship</groupId>
+	<artifactId>service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>application</name>
+	<name>service</name>
 	<description>Rest API Project</description>
 	<properties>
 		<java.version>11</java.version>

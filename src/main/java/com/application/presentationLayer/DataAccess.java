@@ -1,14 +1,14 @@
-package presentationLayer;
+package com.application.presentationLayer;
 
-import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import serviceLayer.SlackChannel;
-import serviceLayer.repository;
-import serviceLayer.*;
+import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import com.application.serviceLayer.SlackChannel;
+import com.application.serviceLayer.Repository;
+import com.application.serviceLayer.*;
 
 import java.util.ArrayList;
 
-public class dataBase implements repository {
+public class DataAccess implements Repository {
 
     private final ArrayList<SlackChannel> channels = new ArrayList<>();
 

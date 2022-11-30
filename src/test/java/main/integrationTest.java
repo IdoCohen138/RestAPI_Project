@@ -1,6 +1,6 @@
 //package com.example.demo;
 //
-//import com.example.demo.serviceLayer.SlackChannel;
+//import com.example.demo.com.application.serviceLayer.SlackChannel;
 //import org.junit.jupiter.api.Assertions;
 //import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.Test;

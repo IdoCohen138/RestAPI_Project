@@ -1,6 +1,6 @@
 //
 //
-//import com.example.demo.serviceLayer.SlackChannelController;
+//import com.example.demo.com.application.serviceLayer.SlackChannelController;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
 //

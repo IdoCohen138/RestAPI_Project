@@ -1,10 +1,10 @@
-package serviceLayer;
-import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+package com.application.serviceLayer;
+import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 
 import java.util.ArrayList;
 
-public interface channelRepository {
+public interface ChannelRepository {
 
     void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException;
     void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;

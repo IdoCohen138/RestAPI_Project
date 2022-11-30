@@ -1,9 +1,9 @@
-package businessLayer;
-import presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import serviceLayer.SlackChannel;
-import serviceLayer.SlackChannelController;
-import serviceLayer.channelRepository;
+package com.application.businessLayer;
+import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import com.application.serviceLayer.SlackChannel;
+import com.application.serviceLayer.SlackChannelController;
+import com.application.serviceLayer.ChannelRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,12 +17,12 @@ import java.util.ArrayList;
 @Validated
 public class EndPoints {
 
-    channelRepository channelInterface = new SlackChannelController();
+    ChannelRepository channelRepository = new SlackChannelController();
 
     @PostMapping("/channels")
     public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel){
         try{
-            channelInterface.createChannel(slackChannel);
+            channelRepository.createChannel(slackChannel);
             return new ResponseEntity<>("The channel has created successful.", HttpStatus.OK);
         }
         catch (ChannelAlreadyExitsInDataBaseException exception){
@@ -33,7 +33,7 @@ public class EndPoints {
     @PutMapping("/channels")
     public ResponseEntity<String> updateChannel(@Valid @RequestBody SlackChannel slackChannel) {
         try{
-            channelInterface.updateChannel(slackChannel);
+            channelRepository.updateChannel(slackChannel);
             return new ResponseEntity<>("The channel status has been modify successful.", HttpStatus.OK);
         }
         catch (ChannelNotExitsInDataBaseException exception) {
@@ -44,7 +44,7 @@ public class EndPoints {
     @DeleteMapping("/channels")
     public ResponseEntity<String> deleteChannel(@Valid @RequestBody SlackChannel slackChannel){
         try{
-            channelInterface.deleteChannel(slackChannel);
+            channelRepository.deleteChannel(slackChannel);
             return new ResponseEntity<>("The channel has been deleted successful.", HttpStatus.OK);
         }
         catch (ChannelNotExitsInDataBaseException exception){
@@ -55,7 +55,7 @@ public class EndPoints {
     public @ResponseBody ResponseEntity<?> getSpecificChannel(@PathParam("webhook") @RequestParam String webhook){
 
         try{
-            SlackChannel channel = channelInterface.getSpecificChannel(webhook);
+            SlackChannel channel = channelRepository.getSpecificChannel(webhook);
             return new ResponseEntity<>(channel, HttpStatus.OK);
         }
         catch (ChannelNotExitsInDataBaseException exception) {
@@ -65,7 +65,7 @@ public class EndPoints {
 
     @RequestMapping(value="/channels", params = "status")
     public @ResponseBody ResponseEntity<?> getChannels(@PathParam("status") @RequestParam String status){
-        ArrayList<?> channels = channelInterface.getChannels(status);
+        ArrayList<?> channels = channelRepository.getChannels(status);
         if (channels.size()==0)
             return new ResponseEntity<>("There are no channels to return.", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(channels, HttpStatus.OK);
