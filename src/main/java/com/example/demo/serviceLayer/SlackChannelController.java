@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 public class SlackChannelController implements channelRepository{
     repository dataBaseInterface = new dataBase();
-    private SlackIntegration si = new SlackIntegration();
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         dataBaseInterface.createChannel(slackChannel);
+        SlackIntegration si = new SlackIntegration("New channel has been created");
         try{
-            si.sendPeriodicMessage(slackChannel);
+            si.sendMessage(slackChannel);
         } catch (IOException e) {
             System.out.println("Cant send Slack Message");
         }
@@ -24,8 +24,9 @@ public class SlackChannelController implements channelRepository{
     public void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
         SlackChannel modifyChannel = dataBaseInterface.updateChannel(slackChannel);
         modifyChannel.setStatus();
+        SlackIntegration si = new SlackIntegration("Channel's status has been updated");
         try{
-            this.si.sendStatusMessage(slackChannel);
+            si.sendMessage(slackChannel);
         } catch (IOException e) {
             System.out.println("Message cant sent to Slack");
         }
@@ -34,6 +35,13 @@ public class SlackChannelController implements channelRepository{
     @Override
     public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
         dataBaseInterface.deleteChannel(slackChannel);
+        SlackIntegration si = new SlackIntegration("Channel has been deleted");
+        try{
+            si.sendMessage(slackChannel);
+        } catch (IOException e) {
+            System.out.println("Message cant sent to Slack");
+        }
+
     }
 
     @Override
