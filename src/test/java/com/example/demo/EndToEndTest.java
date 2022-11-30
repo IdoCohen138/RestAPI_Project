@@ -1,6 +1,8 @@
 package com.example.demo;
 
 import com.example.demo.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
+import org.apache.logging.log4j.core.util.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,21 +46,16 @@ public class EndToEndTest {
         // send POST request
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
-// check response
-        if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Request Successful");
-            System.out.println(response.getBody());
-        } else {
-            System.out.println("Request Failed");
-            System.out.println(response.getStatusCode());
-        }
+        Assertions.assertEquals(response.getStatusCode(),HttpStatus.OK);
+        restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
+
     }
 
     private static Stream<Arguments> webhooks() {
         return Stream.of(
-                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}"),
-                Arguments.of("{\"webhook\":\"Webhook_1\",\"channelName\":\"shanichannel\"}"),
-                Arguments.of("{\"webhook\":\"Webhook_2\",\"channelName\":\"stam\"}")
+                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}","?webhook=https://hooks.slack.com/services/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"),
+                Arguments.of("{\"webhook\":\"Webhook_1\",\"channelName\":\"shanichannel\"}","?webhook=Webhook_1"),
+                Arguments.of("{\"webhook\":\"Webhook_2\",\"channelName\":\"stam\"}","?webhook=Webhook_2")
         );
     }
 
@@ -72,8 +69,8 @@ public class EndToEndTest {
         // build the request
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
         // send POST request
-
        this.restTemplate.put(url, entity);
+        restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
 
     }
     @ParameterizedTest
@@ -82,13 +79,67 @@ public class EndToEndTest {
         //post for the channels will be in the database
         HttpEntity<String> entity_ = new HttpEntity<>(requestJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity_, String.class);
-
-///im not sure about it at all
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-//        restTemplate.req
         ResponseEntity<Void> resp = restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
+        Assertions.assertEquals(resp.getStatusCode(),HttpStatus.OK);
 
     }
+
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void GetSpecificTest(String requestJson,String Url) {
+        //post for the channels will be in the database
+        HttpEntity<String> entity_ = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity_, String.class);
+
+        HttpEntity<String> entity__ = new HttpEntity<>(requestJson, headers);
+        String urll=url+Url;
+        ResponseEntity<String> entity=this.restTemplate.exchange(urll,HttpMethod.GET,entity__,String.class);
+
+        Assertions.assertEquals(entity.getStatusCode(),HttpStatus.OK);
+        restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
+    }
+    @ParameterizedTest
+    @MethodSource("enable")
+    public void GetByStatus_enableTest(String requestJson,String Url) {
+        //post for the channels will be in the database
+        HttpEntity<String> entity_ = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity_, String.class);
+        //restTemplate.put(url, entity_, String.class);
+        String urll=url+Url;
+        HttpEntity<String> entity__ = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> entity=this.restTemplate.exchange(urll,HttpMethod.GET,entity__,String.class);
+        Assertions.assertEquals(entity.getStatusCode(),HttpStatus.OK);
+        restTemplate.exchange(url, HttpMethod.DELETE, entity_, Void.class);
+    }
+    private static Stream<Arguments> enable() {
+        return Stream.of(
+                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}","?status=Enable"),
+                Arguments.of("{\"webhook\":\"Webhook_1\",\"channelName\":\"shanichannel\"}","?status=Enable"),
+                Arguments.of("{\"webhook\":\"Webhook_2\",\"channelName\":\"stam\"}","?status=Enable")
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("disable")
+    public void GetByStatus_disableTest(String requestJson,String Url) {
+        //post for the channels will be in the database
+        HttpEntity<String> entity_ = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity_, String.class);
+        restTemplate.put(url, entity_, String.class);
+        String urll=url+Url;
+        HttpEntity<String> entity__ = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> entity=this.restTemplate.exchange(urll,HttpMethod.GET,entity__,String.class);
+        Assertions.assertEquals(entity.getStatusCode(),HttpStatus.OK);
+        restTemplate.exchange(url, HttpMethod.DELETE, entity_, Void.class);
+    }
+    private static Stream<Arguments> disable() {
+        return Stream.of(
+                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}","?status=Disable"),
+                Arguments.of("{\"webhook\":\"Webhook_1\",\"channelName\":\"shanichannel\"}","?status=Disable"),
+                Arguments.of("{\"webhook\":\"Webhook_2\",\"channelName\":\"stam\"}","?status=Disable")
+        );
+    }
+
 
 }
 //
