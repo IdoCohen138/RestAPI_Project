@@ -1,5 +1,4 @@
-package com.example.demo.serviceLayer;
-import com.example.demo.Enum;
+package com.application.serviceLayer;
 import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
@@ -18,7 +17,7 @@ public class SlackIntegration {
 
     public void sendMessage(SlackChannel sc) throws IOException {
         this.webhookUrl = sc.getWebhook();
-            if (sc.getStatus().equals(Enum.status.Enable)) {
+            if (sc.getStatus().equals(EnumStatus.ENABLED)) {
                 WebhookResponse response = slack.send(webhookUrl, payload);
                 System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)
             }
