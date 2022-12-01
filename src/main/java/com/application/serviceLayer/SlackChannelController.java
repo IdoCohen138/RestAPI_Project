@@ -6,11 +6,13 @@ import com.application.presentationLayer.DataAccess;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SlackChannelController implements ChannelRepository{
     Repository repository = new DataAccess();
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
+        slackChannel.setId(UUID.randomUUID());
         repository.createChannel(slackChannel);
         SlackIntegration si = new SlackIntegration("New channel has been created");
         try{
@@ -23,15 +25,10 @@ public class SlackChannelController implements ChannelRepository{
     @Override
     public void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
         SlackChannel modifyChannel = repository.updateChannel(slackChannel);
-        if (modifyChannel.getStatus().equals(EnumStatus.DISABLED)){
-            modifyChannel.setStatus(EnumStatus.ENABLED);
-        }
-        else {
-            modifyChannel.setStatus(EnumStatus.DISABLED);
-        }
+        modifyChannel.setStatus(slackChannel.getStatus());
         SlackIntegration si = new SlackIntegration("Channel's status has been updated");
         try{
-            si.sendMessage(slackChannel);
+            si.sendMessage(modifyChannel);//must be modifyChannel!! -> the "slackChannel" object not for sure have webhook but the "modifyChannel" object have webhook..
         } catch (IOException e) {
             System.out.println("Message cant sent to Slack");
         }
@@ -39,24 +36,28 @@ public class SlackChannelController implements ChannelRepository{
 
     @Override
     public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        repository.deleteChannel(slackChannel);
+        SlackChannel deleteChannel = repository.deleteChannel(slackChannel);
         SlackIntegration si = new SlackIntegration("Channel has been deleted");
         try{
-            si.sendMessage(slackChannel);
+            si.sendMessage(deleteChannel);
         } catch (IOException e) {
             System.out.println("Message cant sent to Slack");
         }
-
     }
 
     @Override
-    public SlackChannel getSpecificChannel(String webhook) throws ChannelNotExitsInDataBaseException {
-        return repository.getSpecificChannel(webhook);
+    public SlackChannel getSpecificChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
+        return repository.getSpecificChannel(uuid);
     }
 
     @Override
     public ArrayList<?> getChannels(String filter) {
         return repository.getChannels(filter);
+    }
+
+    @Override
+    public ArrayList<?> getAllChannels() {
+        return repository.getAllChannels();
     }
 
 }

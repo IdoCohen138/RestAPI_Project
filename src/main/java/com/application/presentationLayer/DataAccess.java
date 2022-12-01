@@ -7,6 +7,7 @@ import com.application.serviceLayer.Repository;
 import com.application.serviceLayer.*;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class DataAccess implements Repository {
 
@@ -14,7 +15,7 @@ public class DataAccess implements Repository {
 
     @Override
     public void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException{
-        SlackChannel checkIfChannelExist = getChannel(newChannel);
+        SlackChannel checkIfChannelExist = getChannelByWebhook(newChannel.getWebhook());
         if (checkIfChannelExist==null) {
             channels.add(newChannel);
             return;
@@ -23,7 +24,7 @@ public class DataAccess implements Repository {
     }
 
     @Override
-    public SlackChannel updateChannel( SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
+    public SlackChannel updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
         SlackChannel channel = getChannel(slackChannel);
         if (channel== null){
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
@@ -32,14 +33,18 @@ public class DataAccess implements Repository {
     }
 
     @Override
-    public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        if (deleteChannelFromData(slackChannel).equals(EnumOperation.FAILURE))
+    public SlackChannel deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
+        SlackChannel deletedChannel = deleteChannelFromData(slackChannel);
+        if (deletedChannel==null)
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
+        return deletedChannel;
     }
 
     @Override
-    public SlackChannel getSpecificChannel(String webhook) throws ChannelNotExitsInDataBaseException {
-        SlackChannel channel = getChannelByWebhook(webhook);
+    public SlackChannel getSpecificChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
+        SlackChannel toSearch = new SlackChannel();
+        toSearch.setId(uuid);
+        SlackChannel channel = getChannel(toSearch);
         if (channel==null){
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
@@ -51,10 +56,14 @@ public class DataAccess implements Repository {
         return sortArrayByFiltering(filter);
     }
 
+    @Override
+    public ArrayList<?> getAllChannels() {
+        return channels;
+    }
 
     public SlackChannel getChannel(SlackChannel channel) {
         for (SlackChannel modifyChannel : channels) {
-            if (channel.equals(modifyChannel))
+            if (channel.equals(modifyChannel)) //check by webhook
                 return modifyChannel;
         }
         return null;
@@ -68,13 +77,13 @@ public class DataAccess implements Repository {
         return null;
     }
 
-    public EnumOperation deleteChannelFromData(SlackChannel slackChannel){
+    public SlackChannel deleteChannelFromData(SlackChannel slackChannel){
         SlackChannel toRemove = getChannel(slackChannel);
         if (toRemove != null) {
             channels.remove(toRemove);
-            return EnumOperation.SUCCESS;
+            return toRemove;
         }
-        return EnumOperation.FAILURE;
+        return null;
     }
 
     public ArrayList<SlackChannel> sortArrayByFiltering(String filter) {
