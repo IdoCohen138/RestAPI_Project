@@ -1,50 +1,42 @@
-//
-//
-//import com.example.demo.com.application.serviceLayer.SlackChannelController;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//
-//import java.util.Map;
-//
-//public class Client {
-//    private SlackChannelController slackChannelController;
-//
-//    public Client(SlackChannelController slackChannelController) {
-//        this.slackChannelController = slackChannelController;
-//    }
-//
-//    public boolean CreateChannelTest(Map<String, String> json) {
-//        ResponseEntity<String> return_ = new ResponseEntity<String>("The channel has been created successful.", HttpStatus.OK);
-//        if (return_.equals(slackChannelController.createChannel(json))) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//    public boolean updateChannelTest(Map<String, String> json) {
-//        ResponseEntity<String> return_ = new ResponseEntity<String>("TThe channel status has been modify successful.", HttpStatus.OK);
-//        if (return_.equals(slackChannelController.updateChannel(json))) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//    public boolean deleteChannelTest(Map<String, String> json) {
-//        ResponseEntity<String> return_ = new ResponseEntity<String>("The channel has been deleted successful.", HttpStatus.OK);
-//        if (return_.equals(slackChannelController.deleteChannel(json))) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//    public boolean getSpecificChannelTest(Map<String, String> json) {
-//        ResponseEntity<String> return_ = new ResponseEntity<String>("There is no channel with this details.", HttpStatus.OK);
-//        if (return_.equals(slackChannelController.createChannel(json))) {
-//            return false;
-//        }
-//
-//        return true;
-//    }
-//
-//
-//}
+package com.example.demo;
+
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+
+public class Client {
+    String url;
+    HttpHeaders headers;
+    RestTemplate restTemplate;
+
+    public Client(String urll, HttpHeaders headerss, RestTemplate restTemplatee) {
+        url=urll;
+        headers=headerss;
+        restTemplate=restTemplatee;
+    }
+
+
+    public ResponseEntity<String> Post(String requestJson) {
+        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        return response;
+    }
+
+    public ResponseEntity<String> Delete(String requestJson) {
+        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+        return restTemplate.<String>exchange(url, HttpMethod.DELETE, entity, String.class);
+
+    }
+
+    public ResponseEntity<String> Put(String requestJson) {
+        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+        return restTemplate.exchange(url,HttpMethod.PUT,entity,String.class);
+
+    }
+
+    public ResponseEntity<String> GetwithParmUrl(String requestJson, String withParmUrl) {
+        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+
+        return restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
+    }
+
+}
