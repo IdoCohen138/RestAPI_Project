@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.application;
 
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
