@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @RestController
 @Validated
@@ -20,7 +21,7 @@ public class EndPoints {
     ChannelRepository channelRepository = new SlackChannelController();
 
     @PostMapping("/channels")
-    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel){
+    public ResponseEntity<String> createChannel(@RequestBody SlackChannel slackChannel){
         try{
             channelRepository.createChannel(slackChannel);
             return new ResponseEntity<>("The channel has created successful.", HttpStatus.OK);
@@ -30,8 +31,8 @@ public class EndPoints {
         }
     }
 
-    @PutMapping("/channels")
-    public ResponseEntity<String> updateChannel(@Valid @RequestBody SlackChannel slackChannel) {
+    @PutMapping("/channels") //must contain status & id
+    public ResponseEntity<String> updateChannel(@RequestBody SlackChannel slackChannel) {
         try{
             channelRepository.updateChannel(slackChannel);
             return new ResponseEntity<>("The channel status has been modify successful.", HttpStatus.OK);
@@ -41,8 +42,8 @@ public class EndPoints {
         }
     }
 
-    @DeleteMapping("/channels")
-    public ResponseEntity<String> deleteChannel(@Valid @RequestBody SlackChannel slackChannel){
+    @DeleteMapping("/channels") //must contain id
+    public ResponseEntity<String> deleteChannel(@RequestBody SlackChannel slackChannel){
         try{
             channelRepository.deleteChannel(slackChannel);
             return new ResponseEntity<>("The channel has been deleted successful.", HttpStatus.OK);
@@ -51,11 +52,10 @@ public class EndPoints {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @RequestMapping(value="/channels", params = "webhook")
-    public @ResponseBody ResponseEntity<?> getSpecificChannel(@PathParam("webhook") @RequestParam String webhook){
-
+    @RequestMapping(value="/channels", params = "id")  //must contain id in path param
+    public @ResponseBody ResponseEntity<?> getSpecificChannel(@PathParam("id") @RequestParam(value = "id") UUID id){
         try{
-            SlackChannel channel = channelRepository.getSpecificChannel(webhook);
+            SlackChannel channel = channelRepository.getSpecificChannel(id);
             return new ResponseEntity<>(channel, HttpStatus.OK);
         }
         catch (ChannelNotExitsInDataBaseException exception) {
@@ -63,9 +63,17 @@ public class EndPoints {
         }
     }
 
-    @RequestMapping(value="/channels", params = "status")
+    @RequestMapping(value="/channels", params = "status") //must contain status in path param
     public @ResponseBody ResponseEntity<?> getChannels(@PathParam("status") @RequestParam String status){
         ArrayList<?> channels = channelRepository.getChannels(status);
+        if (channels.size()==0)
+            return new ResponseEntity<>("There are no channels to return.", HttpStatus.OK);
+        return new ResponseEntity<>(channels, HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/channels")
+    public @ResponseBody ResponseEntity<?> getChannels(){
+        ArrayList<?> channels = channelRepository.getAllChannels();
         if (channels.size()==0)
             return new ResponseEntity<>("There are no channels to return.", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(channels, HttpStatus.OK);
