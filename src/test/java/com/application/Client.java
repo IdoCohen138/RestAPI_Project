@@ -1,7 +1,12 @@
 package com.application;
 
+import com.application.serviceLayer.SlackChannel;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class Client {
     String url;
@@ -39,4 +44,21 @@ public class Client {
         return restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
     }
 
+    public UUID GetIDsbyWebhook(String webhook) {
+        HttpEntity<String> entity = new HttpEntity<>( headers);
+        ResponseEntity<ArrayList<SlackChannel>> response =restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<ArrayList<SlackChannel>>() {
+        });
+        ArrayList<SlackChannel> channels = response.getBody();
+        for (int i=0;i<channels.size();i++){
+            if(channels.get(i).getWebhook().equals(webhook))
+                return channels.get(i).getId();
+        }
+     return null;
+    }
+    public ResponseEntity<ArrayList<?>> GetAllChannels() {
+        HttpEntity<String> entity = new HttpEntity<>( headers);
+        return restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<ArrayList<?>>() {
+        });
+
+    }
 }

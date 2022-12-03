@@ -13,10 +13,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment =SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EndToEndTest {
     RestTemplate restTemplate;
     String url;
@@ -24,7 +24,7 @@ public class EndToEndTest {
     @LocalServerPort
     private int port;
     private Client myClient;
-    String webhook="{\"webhook\":\"NULLwebhhok\",\"channelName\":\"chanellname\"}";
+    String nullID="{\"id\":\"NULLwebhhok\",\"channelName\":\"chanellname\"}";
 
 
     @BeforeEach
@@ -40,66 +40,77 @@ public class EndToEndTest {
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void PostTest(String requestJson) {
+    public void PostTest(String requestJson,String webhook) {
         Assertions.assertEquals(myClient.Post(requestJson).getStatusCode(),HttpStatus.OK);
-        myClient.Delete(requestJson);
+        myClient.Delete("{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}");
 
     }
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void PutTest(String requestJson) {
+    public void PutTest(String requestJson,String webhook) {
         myClient.Post(requestJson);
-        if(myClient.Put(requestJson).getStatusCode().equals(HttpStatus.OK)) {
-            myClient.Delete(requestJson);
+        String body="{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}"+",\"status\":\"ENABLED\"}";
+        if(myClient.Put(body).getStatusCode().equals(HttpStatus.OK)) {
+            myClient.Delete("{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}");
         }
     }
 @Test
     public void Put_fail_Test() {
         Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            myClient.Put(webhook);
+            myClient.Put(nullID);
         });
     }
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void DeleteTest(String requestJson) {
+    public void DeleteTest(String requestJson,String webhook) {
         if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
-            Assertions.assertEquals(myClient.Delete(requestJson).getStatusCode(),HttpStatus.OK);
+            Assertions.assertEquals(myClient.Delete("{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}").getStatusCode(),HttpStatus.OK);
     }}
+
   @Test
     public void DeleteTest_fail() {
         Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            myClient.Delete(webhook);});
+            myClient.Delete(nullID);});
 
     }
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void GetSpecificTest(String requestJson,String Url) {
+    public void GetSpecificTest(String requestJson,String webhook,String Url) {
         if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
-        Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+Url).getStatusCode(),HttpStatus.OK);
-            myClient.Delete(requestJson);
+        Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+Url+myClient.GetIDsbyWebhook(webhook)).getStatusCode(),HttpStatus.OK);
+            myClient.Delete("{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}");
 
         }}
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void GetByStatus_enable_disable_Test(String requestJson,String channelname,String status) {
+    public void GetByStatus_enable_disable_Test(String requestJson,String webhook,String Url,String status) {
         if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
-            Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+status+"Enable").getStatusCode(),HttpStatus.OK);
-            myClient.Put(requestJson);
-            Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+status+"Disable").getStatusCode(),HttpStatus.OK);
-            myClient.Delete(requestJson);}
+            Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+status+"ENABLED").getStatusCode(),HttpStatus.OK);
+            String body="{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}"+",\"status\":\"DISABLED\"}";
+            myClient.Put(body);
+            Assertions.assertEquals(myClient.GetwithParmUrl(requestJson,url+status+"DISABLED").getStatusCode(),HttpStatus.OK);
+            myClient.Delete("{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}");}
+
+        }
+    @ParameterizedTest
+    @MethodSource("webhooks")
+    public void GetAllChannels(String requestJson,String webhook) {
+
+        myClient.Post(requestJson);
+        Assertions.assertEquals(myClient.GetAllChannels().getStatusCode(),HttpStatus.OK);
+        myClient.Delete("{\"id\":\""+myClient.GetIDsbyWebhook(webhook)+"\"}");
 
         }
 
 
     private static Stream<Arguments> webhooks() {
         return Stream.of(
-                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}","?webhook=https://hooks.slack.com/services/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","?status=")
-//                Arguments.of("{\"webhook\":\"Webhook_1\",\"channelName\":\"shanichannel\"}","?webhook=Webhook_1","?status="),
-//                Arguments.of("{\"webhook\":\"Webhook_2\",\"channelName\":\"stam\"}","?webhook=Webhook_2","?status=")
+                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}","https://hooks.slack.com/services/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","/?id=","/?status="),
+                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"anotherone\"}","https://hooks.slack.com/services/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","/?id=","/?status=")
         );
     }
 

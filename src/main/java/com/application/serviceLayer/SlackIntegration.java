@@ -6,21 +6,15 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 public class SlackIntegration {
-   private final LocalTime lt=LocalTime.now();
-   Slack slack = Slack.getInstance();
+   Slack slack= Slack.getInstance();
    String webhookUrl;
-   Payload payload;
-    public SlackIntegration(String message){
-        //this.lt = LocalTime.now();
-        this.payload = Payload.builder().text(message).build();
-    }
 
-    public void sendMessage(SlackChannel sc) throws IOException {
+    public WebhookResponse sendMessage(SlackChannel sc,String message) throws IOException {
+        Payload payload = Payload.builder().text(message).build();
         this.webhookUrl = sc.getWebhook();
-            if (sc.getStatus().equals(EnumStatus.ENABLED)) {
-                WebhookResponse response = slack.send(webhookUrl, payload);
-                System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)
-            }
+        WebhookResponse response = slack.send(webhookUrl, payload);
+        System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)
+        return response;
     }
 
 }
