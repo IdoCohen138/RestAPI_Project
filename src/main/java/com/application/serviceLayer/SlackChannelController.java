@@ -1,15 +1,21 @@
 package com.application.serviceLayer;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.application.presentationLayer.DataAccess;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
-
+@Component("slackcontroller")
 public class SlackChannelController implements ChannelRepository{
-    Repository repository = new DataAccess();
+    @Autowired
+    Repository repository;
+
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
@@ -59,5 +65,13 @@ public class SlackChannelController implements ChannelRepository{
     public ArrayList<?> getAllChannels() {
         return repository.getAllChannels();
     }
+    @Scheduled(cron ="0 0 10 * * *")
+    public void sendPeriodicMessages() throws IOException {
+        for(int i=0;i<repository.getChannels("ENABLED").size();i++){
+            SlackIntegration slackIntegration = new SlackIntegration("You have no vulnerabilities");
+            slackIntegration.sendMessage((SlackChannel)repository.getChannels("ENABLED").get(i));
 
+        }
+
+    }
 }

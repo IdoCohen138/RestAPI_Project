@@ -13,4 +13,5 @@ public interface ChannelRepository {
     SlackChannel getSpecificChannel(UUID uuid) throws ChannelNotExitsInDataBaseException;
     ArrayList<?> getChannels(String filter);
     ArrayList<?> getAllChannels();
+
 }

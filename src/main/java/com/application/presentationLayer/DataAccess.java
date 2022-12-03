@@ -5,10 +5,12 @@ import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseExc
 import com.application.serviceLayer.SlackChannel;
 import com.application.serviceLayer.Repository;
 import com.application.serviceLayer.*;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.UUID;
-
+@Service
 public class DataAccess implements Repository {
 
     private final ArrayList<SlackChannel> channels = new ArrayList<>();

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 public class SlackIntegration {
-   //private LocalTime lt;
+   private final LocalTime lt=LocalTime.now();
    Slack slack = Slack.getInstance();
    String webhookUrl;
    Payload payload;

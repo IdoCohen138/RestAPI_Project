@@ -4,8 +4,10 @@ import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseExc
 import com.application.serviceLayer.SlackChannel;
 import com.application.serviceLayer.SlackChannelController;
 import com.application.serviceLayer.ChannelRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +19,8 @@ import java.util.UUID;
 @RestController
 @Validated
 public class EndPoints {
-
-    ChannelRepository channelRepository = new SlackChannelController();
+    @Autowired
+    ChannelRepository channelRepository;
 
     @PostMapping("/channels")
     public ResponseEntity<String> createChannel(@RequestBody SlackChannel slackChannel){
