@@ -1,4 +1,5 @@
 package com.application.serviceLayer;
+import com.application.presentationLayer.Exceptions.SlackMessageNotSentException;
 import com.slack.api.webhook.WebhookResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +20,10 @@ public class SlackChannelController implements ChannelRepository{
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
         repository.createChannel(slackChannel);
-        WebhookResponse response;
+
         try{
-            response =slackIntegration.sendMessage(slackChannel, "New channel has been created");
-        } catch (IOException e) {
+            slackIntegration.sendMessage(slackChannel, "New channel has been created");
+        } catch (SlackMessageNotSentException e) {
             System.out.println("Cant send Slack Message");
 
         }
@@ -34,7 +35,7 @@ public class SlackChannelController implements ChannelRepository{
             modifyChannel.setStatus(slackChannel.getStatus());
             try{
                 slackIntegration.sendMessage(modifyChannel,"Channel's status has been updated");//must be modifyChannel!! -> the "slackChannel" object not for sure have webhook but the "modifyChannel" object have webhook..
-            } catch (IOException e) {
+            } catch (SlackMessageNotSentException e) {
                 System.out.println("Message cant sent to Slack");
             }
     }
@@ -44,7 +45,7 @@ public class SlackChannelController implements ChannelRepository{
         SlackChannel deleteChannel = repository.deleteChannel(slackChannel);
         try{
             slackIntegration.sendMessage(deleteChannel,"Channel has been deleted");
-        } catch (IOException e) {
+        } catch (SlackMessageNotSentException e) {
             System.out.println("Message cant sent to Slack");
         }
     }
@@ -65,7 +66,7 @@ public class SlackChannelController implements ChannelRepository{
     }
 
     @Scheduled(cron ="0 0 10 * * *")
-    public void sendPeriodicMessages() throws IOException {
+    public void sendPeriodicMessages() throws SlackMessageNotSentException {
         for(int i=0;i<repository.getChannels("ENABLED").size();i++){
             slackIntegration.sendMessage((SlackChannel)repository.getChannels("ENABLED").get(i),"You have no vulnerabilities");
 

@@ -2,21 +2,14 @@ package com.application;
 
 import com.application.presentationLayer.DataAccess;
 import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 import com.application.serviceLayer.*;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.slack.api.Slack;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.http.HttpClient;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -25,7 +18,7 @@ import static org.mockito.Mockito.mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class integrationTest {
+public class IntegrationTest {
     Slack slack;
     SlackChannelController slackChannelController;
     SlackChannel slackChannel;

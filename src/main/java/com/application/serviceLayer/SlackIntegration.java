@@ -1,4 +1,5 @@
 package com.application.serviceLayer;
+import com.application.presentationLayer.Exceptions.SlackMessageNotSentException;
 import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
@@ -9,12 +10,16 @@ public class SlackIntegration {
    Slack slack= Slack.getInstance();
    String webhookUrl;
 
-    public WebhookResponse sendMessage(SlackChannel slackChannel,String message) throws IOException {
+    public WebhookResponse sendMessage(SlackChannel slackChannel,String message) throws SlackMessageNotSentException {
         Payload payload = Payload.builder().text(message).build();
         this.webhookUrl = slackChannel.getWebhook();
-        WebhookResponse response = slack.send(webhookUrl, payload);
-        System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)
-        return response;
+        try {
+            WebhookResponse response = slack.send(webhookUrl, payload);
+            System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)
+            return response;
+        } catch (IOException e) {
+            throw new SlackMessageNotSentException("Message didn't send to slack");
+        }
     }
 
 }
