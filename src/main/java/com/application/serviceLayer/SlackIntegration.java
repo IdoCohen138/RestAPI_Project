@@ -9,9 +9,9 @@ public class SlackIntegration {
    Slack slack= Slack.getInstance();
    String webhookUrl;
 
-    public WebhookResponse sendMessage(SlackChannel sc,String message) throws IOException {
+    public WebhookResponse sendMessage(SlackChannel slackChannel,String message) throws IOException {
         Payload payload = Payload.builder().text(message).build();
-        this.webhookUrl = sc.getWebhook();
+        this.webhookUrl = slackChannel.getWebhook();
         WebhookResponse response = slack.send(webhookUrl, payload);
         System.out.println(response); // WebhookResponse(code=200, message=OK, body=ok)
         return response;

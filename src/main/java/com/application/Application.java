@@ -12,16 +12,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.io.IOException;
 
 @SpringBootApplication
-@ComponentScan
 @EnableScheduling
 
 public class Application {
 
 	public static void main(String[] args) {
-		//SpringApplication.run(Application.class, args);
 		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 		SlackChannelController emp = context.getBean(SlackChannelController.class);
-//		while (true){
 		try {
 			emp.sendPeriodicMessages();
 
@@ -29,8 +26,5 @@ public class Application {
 			System.out.println("Message cant sent to Slack");
 		}
 		}
-//}
-//		Repository r=new DataAccess();}
-
 
 }
