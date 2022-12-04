@@ -1,0 +1,201 @@
+---
+openapi: 3.0.0
+info:
+  title: RestAPI
+  description: This is a API for our system
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/IdoCohen138/RestAPI_Project/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: User
+  description: Only user can active this end points.
+paths:
+  /channels:
+    get:
+      tags:
+      - User
+      summary: This end point to get all channels.
+      description: Get a list of channel from data base.
+      responses:
+        "200":
+          description: The channels is found.
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                - id: d290f1ee-6c54-4b01-90e6-d701748f0851
+                  webhook: https://hooks.slack.com/services/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
+                  channelName: Security Messages
+                  status: DISABLED
+                - id: 1d90f1ee-8b53-4b91-81d6-f08514870171
+                  webhook: https://hooks.slack.com/services/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
+                  channelName: Random
+                  status: ENABLED
+                items:
+                  $ref: '#/components/schemas/SlackChannel'
+        "400":
+          description: There are no channels to return.
+    put:
+      tags:
+      - User
+      summary: This end point for modify the status of channel.
+      description: Modify a channel from the data base.
+      operationId: Modify Channel
+      requestBody:
+        description: Should pass status, and id!
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: d290f1ee-6c54-4b01-90e6-d701748f0851
+                status: ENABLED
+        required: true
+      responses:
+        "200":
+          description: The channel status has been modify successful.
+        "400":
+          description: This channel not exits in the database
+    post:
+      tags:
+      - User
+      summary: This end point for create new channels.
+      description: Add a new channel to the data base.
+      operationId: Add Channel
+      requestBody:
+        description: Should pass webhook, channelName, status only! the id generate in our system.
+        content:
+          application/json:
+            schema:
+              type: array
+              example:
+                webhook: https://hooks.slack.com/services/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
+                channelName: Security Messages
+                status: ENABLED
+              items:
+                $ref: '#/components/schemas/SlackChannel'
+        required: true
+      responses:
+        "200":
+          description: The channel has created successful.
+        "400":
+          description: This channel already exits in database
+  /channels/{id}:
+    get:
+      tags:
+      - User
+      summary: This end point to get spesific channels by id.
+      description: Get a spesific by id from data base.
+      parameters:
+      - name: id
+        in: path
+        description: pass an id string for search the channel.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The channel is found.
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                  id: d290f1ee-6c54-4b01-90e6-d701748f0851
+                  webhook: https://hooks.slack.com/services/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
+                  channelName: Security Messages
+                  status: ENABLED
+                items:
+                  $ref: '#/components/schemas/SlackChannel'
+        "400":
+          description: This channel not exits in the database
+    delete:
+      tags:
+      - User
+      summary: This end point for delete the channel.
+      description: Delete a channel from the data base.
+      operationId: Delete Channel
+      parameters:
+      - name: id
+        in: path
+        description: Should pass id!
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "200":
+          description: The channel has been deleted successful.
+        "400":
+          description: This channel not exits in the database
+  /channels/{status}:
+    get:
+      tags:
+      - User
+      summary: This end point to get all channels by filtering status.
+      description: Get a list of channel by filter status from data base.
+      parameters:
+      - name: status
+        in: path
+        description: pass an status string for search the channel.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The channels with status is found.
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                - id: d290f1ee-6c54-4b01-90e6-d701748f0851
+                  webhook: https://hooks.slack.com/services/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
+                  channelName: Security Messages
+                  status: ENABLED
+                - id: 1d90f1ee-8b53-4b91-81d6-f08514870171
+                  webhook: https://hooks.slack.com/services/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
+                  channelName: Random
+                  status: ENABLED
+                items:
+                  $ref: '#/components/schemas/SlackChannel'
+        "400":
+          description: There are no channels to return.
+components:
+  schemas:
+    SlackChannel:
+      required:
+      - channelName
+      - id
+      - status
+      - webhook
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        webhook:
+          type: string
+          example: https://hooks.slack.com/services/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
+        channelName:
+          type: string
+          example: Security Messages
+        status:
+          type: string
+          format: ENABLED or DISABLED
+          example: ENABLED
