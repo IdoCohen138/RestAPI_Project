@@ -3,37 +3,40 @@ package com.application;
 import com.application.presentationLayer.DataAccess;
 import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.serviceLayer.*;
-import com.slack.api.Slack;
+import com.application.serviceLayer.Exceptions.SlackMessageNotSentException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.mock;
-
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class IntegrationTest {
-    Slack slack;
     SlackChannelController slackChannelController;
     SlackChannel slackChannel;
-    SlackIntegration slackIntegration;
     Repository DataAccess;
     ArrayList<SlackChannel> channels;
     private Properties properties;
+    private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    private final PrintStream standardOut = System.out;
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException, IOException {
 
         slackChannelController = new SlackChannelController();
-        slack= Mockito.mock(Slack.class);
         slackChannel=new SlackChannel();
         slackChannel.setId(UUID.randomUUID());
 
@@ -51,8 +54,7 @@ public class IntegrationTest {
 
         Field channels_ = DataAccess.getClass().getDeclaredField("channels");
         channels_.setAccessible(true);
-         channels = (ArrayList<SlackChannel>) channels_.get(DataAccess);
-
+        channels = (ArrayList<SlackChannel>) channels_.get(DataAccess);
 
     }
 
@@ -99,17 +101,32 @@ public class IntegrationTest {
                 (ArrayList<SlackChannel>) assertDoesNotThrow(() -> slackChannelController.getChannels("ENABLED"));
         assertEquals(slackChannelreturn.get(0),slackChannel);
 
-    }    @Test
+    }
+    @Test
     void getAllChannelsTest() throws ChannelAlreadyExitsInDataBaseException {
         slackChannelController.createChannel(slackChannel);
         slackChannel.setStatus(EnumStatus.ENABLED);
         ArrayList<SlackChannel> slackChannelreturn=
                 (ArrayList<SlackChannel>) assertDoesNotThrow(() -> slackChannelController.getChannels("ENABLED"));
         assertEquals(slackChannelreturn.get(0),slackChannel);
-
     }
 
 
+    @Test
+    void test_controller_slack_message_fails_to_send_message() throws SlackMessageNotSentException, ChannelAlreadyExitsInDataBaseException {
+        SlackIntegration slackIntegration = Mockito.mock(SlackIntegration.class);
+        SlackMessageNotSentException exception = new SlackMessageNotSentException("Message didn't send to slack");
+        when(slackIntegration.sendMessage(any(),any())).thenThrow(exception);
 
+        ReflectionTestUtils.setField(slackChannelController,"slackIntegration",slackIntegration);
+
+        //to check if the thrown is printed
+        System.setOut(new PrintStream(byteArrayOutputStream));
+
+        slackChannelController.createChannel(slackChannel);
+        assertEquals("Message didn't send to slack", byteArrayOutputStream.toString().trim());
+
+        System.setOut(standardOut);
+    }
 
 }
