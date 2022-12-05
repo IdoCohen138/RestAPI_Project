@@ -12,12 +12,16 @@ import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment =SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EndToEndTest {
+
     RestTemplate restTemplate;
     String url;
     HttpHeaders headers;
@@ -25,6 +29,7 @@ public class EndToEndTest {
     private int port;
     private Client myClient;
     String nullID="{\"id\":\"NULLwebhhok\",\"channelName\":\"chanellname\"}";
+    private static Properties properties;
 
 
     @BeforeEach
@@ -107,10 +112,15 @@ public class EndToEndTest {
         }
 
 
-    private static Stream<Arguments> webhooks() {
+    private static Stream<Arguments> webhooks() throws IOException {
+        InputStream inputStream = EndToEndTest.class.getClassLoader().getResourceAsStream("config.properties");
+        properties = new Properties();
+        properties.load(inputStream);
+        String webhook_message_api = properties.getProperty("webhook_message_api");
+        String webhook_message_api_2 = properties.getProperty("webhook_message_api_2");
         return Stream.of(
-                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"liorchannel\"}","https://hooks.slack.com/services/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","/?id=","/?status="),
-                Arguments.of("{\"webhook\":\"https://hooks.slack.com/services/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\",\"channelName\":\"anotherone\"}","https://hooks.slack.com/services/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","/?id=","/?status=")
+                Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"liorchannel\"}", webhook_message_api),webhook_message_api,"/?id=","/?status="),
+                Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"anotherone\"}",webhook_message_api_2),webhook_message_api_2,"/?id=","/?status=")
         );
     }
 

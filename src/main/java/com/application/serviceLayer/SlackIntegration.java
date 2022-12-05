@@ -1,10 +1,9 @@
 package com.application.serviceLayer;
-import com.application.presentationLayer.Exceptions.SlackMessageNotSentException;
+import com.application.serviceLayer.Exceptions.SlackMessageNotSentException;
 import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
 import java.io.IOException;
-import java.time.LocalTime;
 
 public class SlackIntegration {
    Slack slack= Slack.getInstance();

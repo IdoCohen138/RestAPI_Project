@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -25,15 +27,23 @@ public class IntegrationTest {
     SlackIntegration slackIntegration;
     Repository DataAccess;
     ArrayList<SlackChannel> channels;
+    private Properties properties;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException, IOException {
 
         slackChannelController = new SlackChannelController();
         slack= Mockito.mock(Slack.class);
         slackChannel=new SlackChannel();
         slackChannel.setId(UUID.randomUUID());
-        slackChannel.setWebhook("https://hooks.slack.com/services/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");
+
+        //read from properties
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config.properties");
+        properties = new Properties();
+        properties.load(inputStream);
+        String webhook = properties.getProperty("webhook_message_api");
+
+        slackChannel.setWebhook(webhook);
         slackChannel.setStatus(EnumStatus.ENABLED);
 
         DataAccess=new DataAccess();

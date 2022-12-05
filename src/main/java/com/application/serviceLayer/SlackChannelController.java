@@ -1,13 +1,11 @@
 package com.application.serviceLayer;
-import com.application.presentationLayer.Exceptions.SlackMessageNotSentException;
-import com.slack.api.webhook.WebhookResponse;
+import com.application.serviceLayer.Exceptions.SlackMessageNotSentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 @Component("slackcontroller")
@@ -24,8 +22,7 @@ public class SlackChannelController implements ChannelRepository{
         try{
             slackIntegration.sendMessage(slackChannel, "New channel has been created");
         } catch (SlackMessageNotSentException e) {
-            System.out.println("Cant send Slack Message");
-
+            System.out.println(e.getMessage());
         }
     }
 
@@ -36,7 +33,7 @@ public class SlackChannelController implements ChannelRepository{
             try{
                 slackIntegration.sendMessage(modifyChannel,"Channel's status has been updated");//must be modifyChannel!! -> the "slackChannel" object not for sure have webhook but the "modifyChannel" object have webhook..
             } catch (SlackMessageNotSentException e) {
-                System.out.println("Message cant sent to Slack");
+                System.out.println(e.getMessage());
             }
     }
 
@@ -46,7 +43,7 @@ public class SlackChannelController implements ChannelRepository{
         try{
             slackIntegration.sendMessage(deleteChannel,"Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
-            System.out.println("Message cant sent to Slack");
+            System.out.println(e.getMessage());
         }
     }
 
