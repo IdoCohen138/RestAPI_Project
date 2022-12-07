@@ -1,22 +1,17 @@
 package com.application;
 
-import com.application.presentationLayer.DataAccess;
-import com.application.serviceLayer.EnumStatus;
-import com.application.serviceLayer.Exceptions.SlackMessageNotSentException;
-import com.application.serviceLayer.SlackChannel;
-import com.application.serviceLayer.SlackIntegration;
+import com.application.service.EnumStatus;
+import com.application.service.exceptions.SlackMessageNotSentException;
+import com.application.service.SlackChannel;
+import com.application.service.SlackIntegration;
 import com.slack.api.Slack;
-import com.slack.api.methods.response.oauth.OAuthTokenResponse;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,8 +19,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
@@ -45,7 +38,7 @@ public class SendMessageIntegrationTest {
 
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setup() throws IOException {
 
         slack = Mockito.mock(Slack.class);
 

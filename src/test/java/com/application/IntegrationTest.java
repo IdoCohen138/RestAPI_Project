@@ -1,13 +1,9 @@
 package com.application;
 
-import com.application.presentationLayer.DataAccess;
-import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.application.serviceLayer.*;
-import com.application.serviceLayer.Exceptions.SlackMessageNotSentException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.jupiter.api.AfterEach;
+import com.application.persistence.DataAccess;
+import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.application.service.*;
+import com.application.service.exceptions.SlackMessageNotSentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

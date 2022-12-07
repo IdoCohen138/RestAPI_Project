@@ -1,24 +1,23 @@
-package com.application.presentationLayer;
+package com.application.persistence;
 
-import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.application.presentationLayer.Exceptions.ChannelNotExitsInDataBaseException;
-import com.application.serviceLayer.SlackChannel;
-import com.application.serviceLayer.Repository;
-import com.application.serviceLayer.*;
-import org.springframework.stereotype.Component;
+import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
+import com.application.service.SlackChannel;
+import com.application.service.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
 @Service
 public class DataAccess implements Repository {
 
     private final ArrayList<SlackChannel> channels = new ArrayList<>();
 
     @Override
-    public void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException{
+    public void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException {
         SlackChannel checkIfChannelExist = getChannelByWebhook(newChannel.getWebhook());
-        if (checkIfChannelExist==null) {
+        if (checkIfChannelExist == null) {
             channels.add(newChannel);
             return;
         }
@@ -28,7 +27,7 @@ public class DataAccess implements Repository {
     @Override
     public SlackChannel updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
         SlackChannel channel = getChannel(slackChannel);
-        if (channel== null){
+        if (channel == null) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
         return channel;
@@ -37,7 +36,7 @@ public class DataAccess implements Repository {
     @Override
     public SlackChannel deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
         SlackChannel deletedChannel = deleteChannelFromData(slackChannel);
-        if (deletedChannel==null)
+        if (deletedChannel == null)
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         return deletedChannel;
     }
@@ -47,7 +46,7 @@ public class DataAccess implements Repository {
         SlackChannel toSearch = new SlackChannel();
         toSearch.setId(uuid);
         SlackChannel channel = getChannel(toSearch);
-        if (channel==null){
+        if (channel == null) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
         return channel;
@@ -79,7 +78,7 @@ public class DataAccess implements Repository {
         return null;
     }
 
-    public SlackChannel deleteChannelFromData(SlackChannel slackChannel){
+    public SlackChannel deleteChannelFromData(SlackChannel slackChannel) {
         SlackChannel toRemove = getChannel(slackChannel);
         if (toRemove != null) {
             channels.remove(toRemove);
