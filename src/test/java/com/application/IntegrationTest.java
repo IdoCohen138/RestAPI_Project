@@ -1,8 +1,8 @@
 package com.application;
 
-import com.application.presentationLayer.DataAccess;
-import com.application.presentationLayer.Exceptions.ChannelAlreadyExitsInDataBaseException;
-import com.application.serviceLayer.*;
+import com.application.persistence.DataAccess;
+import com.application.persistence.Exceptions.ChannelAlreadyExitsInDataBaseException;
+import com.application.service.*;
 import com.slack.api.Slack;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,21 +27,21 @@ public class IntegrationTest {
     ArrayList<SlackChannel> channels;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setup() throws NoSuchFieldException, IllegalAccessException {
 
         slackChannelController = new SlackChannelController();
-        slack= Mockito.mock(Slack.class);
-        slackChannel=new SlackChannel();
+        slack = Mockito.mock(Slack.class);
+        slackChannel = new SlackChannel();
         slackChannel.setId(UUID.randomUUID());
         slackChannel.setWebhook("https://hooks.slack.com/services/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");
         slackChannel.setStatus(EnumStatus.ENABLED);
 
-        DataAccess=new DataAccess();
-        ReflectionTestUtils.setField(slackChannelController,"repository",DataAccess);
+        DataAccess = new DataAccess();
+        ReflectionTestUtils.setField(slackChannelController, "repository", DataAccess);
 
         Field channels_ = DataAccess.getClass().getDeclaredField("channels");
         channels_.setAccessible(true);
-         channels = (ArrayList<SlackChannel>) channels_.get(DataAccess);
+        channels = (ArrayList<SlackChannel>) channels_.get(DataAccess);
 
 
     }
@@ -49,57 +49,60 @@ public class IntegrationTest {
     @Test
     void createChannelTest() {
 
-        assertEquals(0,channels.size());
+        assertEquals(0, channels.size());
         assertDoesNotThrow(() -> slackChannelController.createChannel(slackChannel));
-        assertEquals(1,channels.size());
+        assertEquals(1, channels.size());
 
     }
+
     @Test
     void updateChannelTest() throws ChannelAlreadyExitsInDataBaseException {
 
         slackChannelController.createChannel(slackChannel);
-        assertEquals(slackChannel.getStatus(),channels.get(0).getStatus());
+        assertEquals(slackChannel.getStatus(), channels.get(0).getStatus());
         slackChannel.setStatus(EnumStatus.ENABLED);
         assertDoesNotThrow(() -> slackChannelController.updateChannel(slackChannel));
-        assertEquals(slackChannel.getStatus(),channels.get(0).getStatus());
+        assertEquals(slackChannel.getStatus(), channels.get(0).getStatus());
 
     }
+
     @Test
     void deleteChannelTest() throws ChannelAlreadyExitsInDataBaseException {
 
         slackChannelController.createChannel(slackChannel);
         assertDoesNotThrow(() -> slackChannelController.deleteChannel(slackChannel));
-        assertEquals(0,channels.size());
+        assertEquals(0, channels.size());
 
     }
 
     @Test
     void getSpecificChannelTest() throws ChannelAlreadyExitsInDataBaseException {
         slackChannelController.createChannel(slackChannel);
-        SlackChannel slackChannelreturn=
-        assertDoesNotThrow(() -> slackChannelController.getSpecificChannel(slackChannel.getId()));
-        assertEquals(slackChannelreturn,slackChannel);
+        SlackChannel slackChannelreturn =
+                assertDoesNotThrow(() -> slackChannelController.getSpecificChannel(slackChannel.getId()));
+        assertEquals(slackChannelreturn, slackChannel);
 
     }
+
     @Test
     void getChannelsTest() throws ChannelAlreadyExitsInDataBaseException {
         slackChannelController.createChannel(slackChannel);
         slackChannel.setStatus(EnumStatus.ENABLED);
-        ArrayList<SlackChannel> slackChannelreturn=
-                (ArrayList<SlackChannel>) assertDoesNotThrow(() -> slackChannelController.getChannels("ENABLED"));
-        assertEquals(slackChannelreturn.get(0),slackChannel);
-
-    }    @Test
-    void getAllChannelsTest() throws ChannelAlreadyExitsInDataBaseException {
-        slackChannelController.createChannel(slackChannel);
-        slackChannel.setStatus(EnumStatus.ENABLED);
-        ArrayList<SlackChannel> slackChannelreturn=
-                (ArrayList<SlackChannel>) assertDoesNotThrow(() -> slackChannelController.getChannels("ENABLED"));
-        assertEquals(slackChannelreturn.get(0),slackChannel);
+        List<SlackChannel> slackChannelreturn =
+                (List<SlackChannel>) assertDoesNotThrow(() -> slackChannelController.getChannels(EnumStatus.ENABLED));
+        assertEquals(slackChannelreturn.get(0), slackChannel);
 
     }
 
+    @Test
+    void getAllChannelsTest() throws ChannelAlreadyExitsInDataBaseException {
+        slackChannelController.createChannel(slackChannel);
+        slackChannel.setStatus(EnumStatus.ENABLED);
+        List<SlackChannel> slackChannelreturn =
+                assertDoesNotThrow(() -> slackChannelController.getChannels(EnumStatus.ENABLED));
+        assertEquals(slackChannelreturn.get(0), slackChannel);
 
+    }
 
 
 }

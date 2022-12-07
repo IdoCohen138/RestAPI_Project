@@ -1,4 +1,4 @@
-package com.application.presentationLayer.Exceptions;
+package com.application.persistence.Exceptions;
 
 
 public class SlackMessageNotSentException extends Exception {

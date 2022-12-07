@@ -1,4 +1,4 @@
-package com.application.businessLayer;
+package com.application.business;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatus status, WebRequest request){
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatus status, WebRequest request) {
         Map<String, List<String>> body = new HashMap<>();
         List<String> errors = exception.getBindingResult()
                 .getFieldErrors()
@@ -31,6 +31,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("errors", errors);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         return new MethodValidationPostProcessor();
