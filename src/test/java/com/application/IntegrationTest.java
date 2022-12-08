@@ -7,6 +7,9 @@ import com.application.service.exceptions.SlackMessageNotSentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -20,12 +23,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+//@TestPropertySource("/config.properties")
 public class IntegrationTest {
     SlackChannelController slackChannelController;
     SlackChannel slackChannel;
     Repository DataAccess;
     ArrayList<SlackChannel> channels;
     private Properties properties;
+
+//    @Value("${webhook_message_api}")
+//    static String webhook_message_api_property;
+
     private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     private final PrintStream standardOut = System.out;
 
