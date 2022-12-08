@@ -13,15 +13,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 public class Application {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SlackMessageNotSentException {
 		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-		SlackChannelController emp = context.getBean(SlackChannelController.class);
-		try {
-			emp.sendPeriodicMessages();
+		SlackChannelController slackChannelController = context.getBean(SlackChannelController.class);
+		slackChannelController.sendPeriodicMessages();
 
-		}catch(SlackMessageNotSentException e) {
-			System.out.println("Message cant sent to Slack");
-		}
 		}
 
 }

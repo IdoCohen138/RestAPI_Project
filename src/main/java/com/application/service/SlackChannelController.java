@@ -7,21 +7,23 @@ import org.springframework.stereotype.Component;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component("slackcontroller")
-public class SlackChannelController implements ChannelRepository {
+public class SlackChannelController implements BusinessInterface {
     @Autowired
-    Repository repository;
+    PersistenceInterface persistenceInterface;
     SlackIntegration slackIntegration = new SlackIntegration();
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
-        repository.createChannel(slackChannel);
+        persistenceInterface.createChannel(slackChannel);
 
         try {
+            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+                return;
             slackIntegration.sendMessage(slackChannel, "New channel has been created");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
@@ -30,10 +32,12 @@ public class SlackChannelController implements ChannelRepository {
 
     @Override
     public void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel modifyChannel = repository.updateChannel(slackChannel);
+        SlackChannel modifyChannel = persistenceInterface.updateChannel(slackChannel);
         modifyChannel.setStatus(slackChannel.getStatus());
         try {
-            slackIntegration.sendMessage(modifyChannel, "Channel's status has been updated");//must be modifyChannel!! -> the "slackChannel" object not for sure have webhook but the "modifyChannel" object have webhook..
+            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+                return;
+            slackIntegration.sendMessage(modifyChannel, "Channel's status has been updated");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -41,8 +45,10 @@ public class SlackChannelController implements ChannelRepository {
 
     @Override
     public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel deleteChannel = repository.deleteChannel(slackChannel);
+        SlackChannel deleteChannel = persistenceInterface.deleteChannel(slackChannel);
         try {
+            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+                return;
             slackIntegration.sendMessage(deleteChannel, "Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
@@ -50,26 +56,29 @@ public class SlackChannelController implements ChannelRepository {
     }
 
     @Override
-    public SlackChannel getSpecificChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
-        return repository.getSpecificChannel(uuid);
+    public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
+        return persistenceInterface.getChannel(uuid);
     }
 
     @Override
-    public ArrayList<?> getChannels(String filter) {
-        return repository.getChannels(filter);
+    public List<SlackChannel> getChannels(EnumStatus filter) {
+        return persistenceInterface.getChannels(filter);
     }
 
     @Override
-    public ArrayList<?> getAllChannels() {
-        return repository.getAllChannels();
+    public List<SlackChannel> getAllChannels() {
+        return persistenceInterface.getAllChannels();
     }
 
     @Scheduled(cron = "0 0 10 * * *")
-    public void sendPeriodicMessages() throws SlackMessageNotSentException {
-        for (int i = 0; i < repository.getChannels("ENABLED").size(); i++) {
-            slackIntegration.sendMessage((SlackChannel) repository.getChannels("ENABLED").get(i), "You have no vulnerabilities");
-
+    public void sendPeriodicMessages() {
+        for (SlackChannel slackChannel: persistenceInterface.getChannels(EnumStatus.ENABLED)) {
+            try{
+                slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities");
+            }
+            catch (SlackMessageNotSentException slackMessageNotSentException) {
+                System.out.println(slackMessageNotSentException.getMessage());
+            }
         }
-
     }
 }

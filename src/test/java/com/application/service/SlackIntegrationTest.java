@@ -1,4 +1,4 @@
-package com.application;
+package com.application.service;
 
 import com.application.service.EnumStatus;
 import com.application.service.exceptions.SlackMessageNotSentException;
@@ -30,14 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@TestPropertySource("/config.properties")
-public class SendMessageIntegrationTest {
+public class SlackIntegrationTest {
     Slack slack;
     SlackIntegration slackIntegration;
     SlackChannel slackChannel;
     HttpHeaders headers;
-    @Value("${webhook_message_api}") static String webhook_message_api_property;
-    @Value("${webhook_message_api}") static String webhook_message_api_2_property;
 
     @BeforeEach
     public void setup() throws IOException {
@@ -47,7 +44,7 @@ public class SendMessageIntegrationTest {
         //set new channel
         slackChannel = new SlackChannel();
         slackChannel.setId(UUID.randomUUID());
-        slackChannel.setWebhook(webhook_message_api_property);
+        slackChannel.setWebhook("SOME_WEBHOOK1");
         slackChannel.setStatus(EnumStatus.ENABLED);
 
         slackIntegration = new SlackIntegration();
@@ -72,8 +69,8 @@ public class SendMessageIntegrationTest {
 
     private static Stream<Arguments> webhooks() throws IOException {
         return Stream.of(
-                Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"liorchannel\"}", webhook_message_api_property),webhook_message_api_property,"/?id=","/?status="),
-                Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"anotherone\"}",webhook_message_api_2_property),webhook_message_api_2_property,"/?id=","/?status=")
+                Arguments.of("{\"webhook\":\"SOME_WEBHOOK1\",\"channelName\":\"liorchannel\"}", "SOME_WEBHOOK1","/?id=","/?status="),
+                Arguments.of("{\"webhook\":\"SOME_WEBHOOK1\",\"channelName\":\"anotherone\"}","SOME_WEBHOOK2","/?id=","/?status=")
         );
     }
 }

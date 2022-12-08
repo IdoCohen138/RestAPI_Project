@@ -1,4 +1,4 @@
-package com.application;
+package com.application.utils;
 
 import com.application.service.SlackChannel;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,10 +13,10 @@ public class Client {
     HttpHeaders headers;
     RestTemplate restTemplate;
 
-    public Client(String urll, HttpHeaders headerss, RestTemplate restTemplatee) {
-        url=urll;
-        headers=headerss;
-        restTemplate=restTemplatee;
+    public Client(String url, HttpHeaders headers, RestTemplate restTemplate) {
+        this.url=url;
+        this.headers=headers;
+        this.restTemplate=restTemplate;
     }
 
 

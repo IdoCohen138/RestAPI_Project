@@ -1,5 +1,6 @@
-package com.application;
+package com.application.business;
 
+import com.application.utils.Client;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment =SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EndToEndTest {
+public class EndPointTest {
 
     RestTemplate restTemplate;
     String url;
@@ -112,7 +113,7 @@ public class EndToEndTest {
 
 
     private static Stream<Arguments> webhooks() throws IOException {
-        InputStream inputStream = EndToEndTest.class.getClassLoader().getResourceAsStream("config.properties");
+        InputStream inputStream = EndPointTest.class.getClassLoader().getResourceAsStream("config.properties");
         properties = new Properties();
         properties.load(inputStream);
         String webhook_message_api = properties.getProperty("webhook_message_api");
