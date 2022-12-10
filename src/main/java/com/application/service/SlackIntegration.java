@@ -4,9 +4,10 @@ import com.application.service.exceptions.SlackMessageNotSentException;
 import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-
+@Service
 public class SlackIntegration {
 
     Slack slack = Slack.getInstance();

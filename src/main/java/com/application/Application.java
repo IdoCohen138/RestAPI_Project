@@ -1,5 +1,6 @@
 package com.application;
 
+import com.application.service.SlackIntegration;
 import com.application.service.exceptions.SlackMessageNotSentException;
 import com.application.service.SlackChannelController;
 import org.springframework.boot.SpringApplication;

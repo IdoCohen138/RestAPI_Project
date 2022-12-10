@@ -1,5 +1,6 @@
 package com.application.business;
 
+import com.application.service.EnumStatus;
 import com.application.utils.Client;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,85 +43,42 @@ public class EndPointTest {
         myClient=new Client(url,headers,restTemplate);
     }
 
-
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void postTest(String requestJson, String webhook) {
+    public void EndToEndTest(String requestJson, String webhook, String Url, String status) {
         Assertions.assertEquals(myClient.Post(requestJson).getStatusCode(),HttpStatus.OK);
-        myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}");
 
-    }
+        String body_E="{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}"+",\"status\":" +EnumStatus.ENABLED+"}";
+        Assertions.assertEquals(myClient.Put(body_E).getStatusCode(),HttpStatus.OK);
 
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void putTest(String requestJson, String webhook) {
-        myClient.Post(requestJson);
-        String body="{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}"+",\"status\":\"ENABLED\"}";
-        if(myClient.Put(body).getStatusCode().equals(HttpStatus.OK)) {
-            myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}");
-        }
-    }
-    @Test
-    public void putFailTest() {
-        Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            myClient.Put(nullID);
-        });
-    }
-
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void deleteTest(String requestJson, String webhook) {
-        if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
-            Assertions.assertEquals(myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}").getStatusCode(),HttpStatus.OK);
-    }}
-
-  @Test
-    public void deleteTestFail() {
-        Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            myClient.Delete(nullID);});
-
-    }
-
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void getSpecificTest(String requestJson, String webhook, String Url) {
-        if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
         Assertions.assertEquals(myClient.getwithParmUrl(requestJson,url+Url+myClient.getIDsbyWebhook(webhook)).getStatusCode(),HttpStatus.OK);
-            myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}");
 
-        }}
+        Assertions.assertEquals(myClient.getwithParmUrl(requestJson,url+status+"ENABLED").getStatusCode(),HttpStatus.OK);
+        String body_D="{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}"+",\"status\":" +EnumStatus.DISABLED+"}";
 
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void getByStatusEnableDisableTest(String requestJson, String webhook, String Url, String status) {
-        if(myClient.Post(requestJson).getStatusCode().equals(HttpStatus.OK)) {
-            Assertions.assertEquals(myClient.getwithParmUrl(requestJson,url+status+"ENABLED").getStatusCode(),HttpStatus.OK);
-            String body="{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}"+",\"status\":\"DISABLED\"}";
-            myClient.Put(body);
-            Assertions.assertEquals(myClient.getwithParmUrl(requestJson,url+status+"DISABLED").getStatusCode(),HttpStatus.OK);
-            myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}");}
+        Assertions.assertEquals(myClient.Put(body_D).getStatusCode(),HttpStatus.OK);
 
-        }
-    @ParameterizedTest
-    @MethodSource("webhooks")
-    public void getAllChannels(String requestJson, String webhook) {
+        Assertions.assertEquals(myClient.getwithParmUrl(requestJson,url+status+"DISABLED").getStatusCode(),HttpStatus.OK);
 
-        myClient.Post(requestJson);
         Assertions.assertEquals(myClient.getAllChannels().getStatusCode(),HttpStatus.OK);
-        myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}");
 
-        }
+
+        Assertions.assertEquals(myClient.Delete("{\"id\":\""+myClient.getIDsbyWebhook(webhook)+"\"}").getStatusCode(),HttpStatus.OK);
+
+        Assertions.assertThrows(HttpClientErrorException.class, () -> { myClient.Put(nullID); });
+        Assertions.assertThrows(HttpClientErrorException.class, () -> { myClient.Delete(nullID);});
+    }
 
 
     private static Stream<Arguments> webhooks() throws IOException {
-        InputStream inputStream = EndPointTest.class.getClassLoader().getResourceAsStream("config.properties");
+        InputStream inputStream = EndPointTest.class.getClassLoader().getResourceAsStream("application.properties");
         properties = new Properties();
         properties.load(inputStream);
         String webhook_message_api = properties.getProperty("webhook_message_api");
         String webhook_message_api_2 = properties.getProperty("webhook_message_api_2");
         return Stream.of(
                 Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"liorchannel\"}", webhook_message_api),webhook_message_api,"/?id=","/?status="),
-                Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"anotherone\"}",webhook_message_api_2),webhook_message_api_2,"/?id=","/?status=")
+               Arguments.of(String.format("{\"webhook\":\"%s\",\"channelName\":\"anotherone\"}",webhook_message_api_2),webhook_message_api_2,"/?id=","/?status=")
         );
     }
 

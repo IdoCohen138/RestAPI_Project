@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.service.EnumStatus;
 import com.application.service.exceptions.SlackMessageNotSentException;
 import com.application.service.SlackChannel;
@@ -8,6 +9,7 @@ import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
@@ -40,7 +43,6 @@ public class SlackIntegrationTest {
     public void setup() throws IOException {
 
         slack = Mockito.mock(Slack.class);
-
         //set new channel
         slackChannel = new SlackChannel();
         slackChannel.setId(UUID.randomUUID());
@@ -66,6 +68,23 @@ public class SlackIntegrationTest {
 
         assertEquals(webhookResponseToTest.getCode(),200);
     }
+
+//    @Test
+//    void test_controller_slack_message_fails_to_send_message() throws SlackMessageNotSentException, ChannelAlreadyExitsInDataBaseException {
+//        SlackIntegration slackIntegration = Mockito.mock(SlackIntegration.class);
+//        SlackMessageNotSentException exception = new SlackMessageNotSentException("Message didn't send to slack");
+//        when(slackIntegration.sendMessage(any(),any())).thenThrow(exception);
+//
+//        ReflectionTestUtils.setField(ChannelRepository,"slackIntegration",slackIntegration);
+//
+//        //to check if the thrown is printed
+//        System.setOut(new PrintStream(byteArrayOutputStream));
+//
+//        slackChannelController.createChannel(slackChannel);
+//        assertEquals("Message didn't send to slack", byteArrayOutputStream.toString().trim());
+//
+//        System.setOut(standardOut);
+//    }
 
     private static Stream<Arguments> webhooks() throws IOException {
         return Stream.of(

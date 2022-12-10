@@ -14,7 +14,9 @@ import java.util.UUID;
 public class SlackChannelController implements BusinessInterface {
     @Autowired
     PersistenceInterface persistenceInterface;
-    SlackIntegration slackIntegration = new SlackIntegration();
+
+    @Autowired
+    SlackIntegration slackIntegration;
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {

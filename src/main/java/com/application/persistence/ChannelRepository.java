@@ -63,7 +63,8 @@ public class ChannelRepository implements PersistenceInterface {
         return channels;
     }
 
-    public SlackChannel getChannel(SlackChannel channel) {
+
+    private SlackChannel getChannel(SlackChannel channel) {
         for (SlackChannel modifyChannel : channels) {
             if (channel.equals(modifyChannel))
                 return modifyChannel;
@@ -79,7 +80,7 @@ public class ChannelRepository implements PersistenceInterface {
         return null;
     }
 
-    public SlackChannel deleteChannelFromData(SlackChannel slackChannel) {
+    private SlackChannel deleteChannelFromData(SlackChannel slackChannel) {
         SlackChannel toRemove = getChannel(slackChannel);
         if (toRemove != null) {
             channels.remove(toRemove);
@@ -88,8 +89,8 @@ public class ChannelRepository implements PersistenceInterface {
         return null;
     }
 
-    public ArrayList<SlackChannel> sortArrayByFiltering(EnumStatus filter) {
-        ArrayList<SlackChannel> filterArray = new ArrayList<>();
+    private List<SlackChannel> sortArrayByFiltering(EnumStatus filter) {
+        List<SlackChannel> filterArray = new ArrayList<>();
         for (SlackChannel channel : channels) {
             if (channel.getStatus().equals(filter))
                 filterArray.add(channel);
@@ -97,7 +98,7 @@ public class ChannelRepository implements PersistenceInterface {
         return filterArray;
     }
 
-    public Boolean channelExists(SlackChannel channel){
+    private Boolean channelExists(SlackChannel channel){
         return getChannelByWebhook(channel.getWebhook()) != null;
     }
 }
