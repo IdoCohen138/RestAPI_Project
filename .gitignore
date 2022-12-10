@@ -13,6 +13,9 @@ target/
 .springBeans
 .sts4-cache
 
+src/test/resources/config.properties
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -31,4 +34,4 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/test/EndToEndTest.java
+
