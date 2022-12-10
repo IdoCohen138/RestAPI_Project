@@ -76,6 +76,7 @@ public class SlackChannelController implements BusinessInterface {
         }
     }
 
+
     @Override
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
         return persistenceInterface.getChannel(uuid);
