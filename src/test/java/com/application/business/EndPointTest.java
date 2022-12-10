@@ -71,7 +71,7 @@ public class EndPointTest {
 
 
     private static Stream<Arguments> webhooks() throws IOException {
-        InputStream inputStream = EndPointTest.class.getClassLoader().getResourceAsStream("application.properties");
+        InputStream inputStream = EndPointTest.class.getClassLoader().getResourceAsStream("config.properties");
         properties = new Properties();
         properties.load(inputStream);
         String webhook_message_api = properties.getProperty("webhook_message_api");
