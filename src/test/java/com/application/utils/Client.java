@@ -28,7 +28,7 @@ public class Client {
 
     public ResponseEntity<String> Delete(String requestJson) {
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-        return restTemplate.<String>exchange(url, HttpMethod.DELETE, entity, String.class);
+        return restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 
     }
 

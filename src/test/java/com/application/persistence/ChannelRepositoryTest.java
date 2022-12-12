@@ -1,25 +1,20 @@
 package com.application.persistence;
 
-import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
-import com.application.service.*;
-import com.application.service.exceptions.SlackMessageNotSentException;
-import org.junit.jupiter.api.Assertions;
+import com.application.service.EnumStatus;
+import com.application.service.PersistenceInterface;
+import com.application.service.SlackChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 public class ChannelRepositoryTest {
     SlackChannel slackChannel;
@@ -27,9 +22,9 @@ public class ChannelRepositoryTest {
     List<SlackChannel> channels;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException , IOException{
+    public void setUp() throws NoSuchFieldException, IllegalAccessException, IOException {
         createSlackChannel();
-        ChannelRepository =new ChannelRepository();
+        ChannelRepository = new ChannelRepository();
 
         Field channels_ = ChannelRepository.getClass().getDeclaredField("channels");
         channels_.setAccessible(true);
@@ -40,22 +35,25 @@ public class ChannelRepositoryTest {
 
     @Test
     void createChannelTestSuccess() {
-        assertEquals(0,channels.size());
+        assertEquals(0, channels.size());
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        assertEquals(1,channels.size());
+        assertEquals(1, channels.size());
 
     }
+
     @Test
     void updateChannelTestSuccess() {
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
         assertDoesNotThrow(() -> ChannelRepository.updateChannel(slackChannel));
-        assertEquals(slackChannel.getStatus(),channels.get(0).getStatus());
+        assertEquals(slackChannel.getStatus(), channels.get(0).getStatus());
 
     }
 
     @Test
-    void updateChannelTestfail() {
-        assertThrows(ChannelNotExitsInDataBaseException.class, () -> { ChannelRepository.updateChannel(slackChannel);});
+    void updateChannel_no_slack_channel_to_update_TestFail() {
+        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+            ChannelRepository.updateChannel(slackChannel);
+        });
     }
 
 
@@ -64,61 +62,68 @@ public class ChannelRepositoryTest {
 
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
         assertDoesNotThrow(() -> ChannelRepository.deleteChannel(slackChannel));
-        assertEquals(0,channels.size());
+        assertEquals(0, channels.size());
     }
 
     @Test
-    void deleteChannelTestFail() {
-        assertThrows(ChannelNotExitsInDataBaseException.class, () -> { ChannelRepository.deleteChannel(slackChannel);});
+    void deleteChannel_no_slack_channel_to_delete_TestFail() {
+        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+            ChannelRepository.deleteChannel(slackChannel);
+        });
     }
 
 
     @Test
-    void getSpecificChannelTestSuccess()   {
+    void getSpecificChannelTestSuccess() {
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        SlackChannel slackChannelreturn=
-        assertDoesNotThrow(() -> ChannelRepository.getChannel(slackChannel.getId()));
-        assertEquals(slackChannelreturn,slackChannel);
+        SlackChannel slackChannelreturn =
+                assertDoesNotThrow(() -> ChannelRepository.getChannel(slackChannel.getId()));
+        assertEquals(slackChannelreturn, slackChannel);
 
     }
+
     @Test
-    void getSpecificChannelTestFail() {
-        assertThrows(ChannelNotExitsInDataBaseException.class, () -> { ChannelRepository.getChannel(slackChannel.getId());});
+    void getSpecificChannel_no_slack_channel_to_get_TestFail() {
+        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+            ChannelRepository.getChannel(slackChannel.getId());
+        });
     }
 
 
     @Test
-    void getChannels_byfilter_enable_TestSuccess()  {
+    void getChannels_byFilter_enable_TestSuccess() {
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        List<SlackChannel> slackChannelreturn_enable=
+        List<SlackChannel> slackChannelreturn_enable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.ENABLED));
-        assertEquals(slackChannelreturn_enable,channels);
+        assertEquals(slackChannelreturn_enable, channels);
 
     }
+
     @Test
-    void getChannels_byfilter_enable_return_nothing_TestSuccess()  {
+    void getChannels_byFilter_enable_return_nothing_TestSuccess() {
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        List<SlackChannel> slackChannelreturn_disable=
+        List<SlackChannel> slackChannelreturn_disable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.DISABLED));
-        assertEquals(slackChannelreturn_disable.size(),0);
+        assertEquals(slackChannelreturn_disable.size(), 0);
 
     }
 
     @Test
-    void getChannels_byfilter_disable_TestSuccess()  {
+    void getChannels_byFilter_disable_TestSuccess() {
         slackChannel.setStatus(EnumStatus.DISABLED);
-        List<SlackChannel> slackChannelreturn_disable=
+        List<SlackChannel> slackChannelreturn_disable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.DISABLED));
-        assertEquals(slackChannelreturn_disable,channels);
+        assertEquals(slackChannelreturn_disable, channels);
 
     }
+
     @Test
-    void getChannels_byfilter_disable_return_nothing_TestSuccess()  {
+    void getChannels_byFilter_disable_return_nothing_TestSuccess() {
         slackChannel.setStatus(EnumStatus.DISABLED);
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        List<SlackChannel> slackChannelreturn_enable=
+        List<SlackChannel> slackChannelreturn_enable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.ENABLED));
-        assertEquals(slackChannelreturn_enable.size(),0);
+        assertEquals(slackChannelreturn_enable.size(), 0);
 
     }
 
@@ -126,20 +131,19 @@ public class ChannelRepositoryTest {
     @Test
     void getAllChannelsTestSuccess() {
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        List<SlackChannel> slackChannelreturn= ChannelRepository.getAllChannels();
-        assertEquals(slackChannelreturn,channels);
+        List<SlackChannel> slackChannelreturn = ChannelRepository.getAllChannels();
+        assertEquals(slackChannelreturn, channels);
     }
 
     @Test
-    void getAllChannelsTest_return_nothing_Success() {
-        List<SlackChannel> slackChannelreturn= ChannelRepository.getAllChannels();
-        assertEquals(slackChannelreturn,channels);
+    void getAllChannels_return_nothing_TestSuccess() {
+        List<SlackChannel> slackChannelreturn = ChannelRepository.getAllChannels();
+        assertEquals(slackChannelreturn, channels);
     }
 
 
-
     private void createSlackChannel() throws IOException {
-        slackChannel=new SlackChannel();
+        slackChannel = new SlackChannel();
         String webhook = readFromProperties();
         slackChannel.setWebhook(webhook);
         slackChannel.setStatus(EnumStatus.ENABLED);
@@ -147,7 +151,7 @@ public class ChannelRepositoryTest {
     }
 
 
-    private String readFromProperties() throws IOException{
+    private String readFromProperties() throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
