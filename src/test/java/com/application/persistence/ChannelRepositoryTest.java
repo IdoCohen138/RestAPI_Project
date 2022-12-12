@@ -152,7 +152,7 @@ public class ChannelRepositoryTest {
 
 
     private String readFromProperties() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application.properties");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
         return properties.getProperty("webhook_message_api");
