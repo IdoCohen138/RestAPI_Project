@@ -4,7 +4,7 @@ import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseExcep
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.EnumStatus;
 import com.application.service.SlackChannel;
-import com.application.service.PersistenceInterface;
+import com.application.service.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ChannelRepository implements PersistenceInterface {
+public class ChannelRepository implements Repository {
 
     private final List<SlackChannel> channels = new ArrayList<>();
 

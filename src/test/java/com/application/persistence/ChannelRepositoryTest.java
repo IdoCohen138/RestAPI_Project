@@ -2,7 +2,7 @@ package com.application.persistence;
 
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.EnumStatus;
-import com.application.service.PersistenceInterface;
+import com.application.service.Repository;
 import com.application.service.SlackChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ChannelRepositoryTest {
     SlackChannel slackChannel;
-    PersistenceInterface ChannelRepository;
+    Repository ChannelRepository;
     List<SlackChannel> channels;
 
     @BeforeEach

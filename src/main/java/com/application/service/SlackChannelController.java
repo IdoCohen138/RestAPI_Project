@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Component("slackcontroller")
-public class SlackChannelController implements BusinessInterface {
+public class SlackChannelController implements Business {
     @Autowired
-    PersistenceInterface channelRepository;
+    Repository channelRepository;
 
     @Autowired
     SlackIntegration slackIntegration;
