@@ -88,8 +88,7 @@ public class EndPointTest {
         if (channelName != null) map.put("channelName", channelName);
         if (id != null) map.put("id", id);
         if (enumStatus != null) map.put("status", enumStatus);
-        JSONObject json = new JSONObject(map);
-        return json;
+        return new JSONObject(map);
     }
     private JSONObject jasonByParams(String webhook, String channelName) {
         return jasonByParams( webhook,channelName, null, null);
