@@ -28,11 +28,11 @@ public class SlackIntegrationTest {
         slackIntegration.setSlack(slack);
     }
 
+
     @Test
     public void sendMessageTestSuccess() throws SlackMessageNotSentException, IOException {
 
         slackIntegration.sendMessage(slackChannel, "SOME_MESSAGE");
-
         Payload payload = Payload.builder().text("SOME_MESSAGE").build();
 
         Mockito.verify(slack).send(slackChannel.getWebhook(), payload);

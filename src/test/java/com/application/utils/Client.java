@@ -1,63 +1,64 @@
 package com.application.utils;
 
 import com.application.service.SlackChannel;
+import lombok.AllArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.lang.NonNull;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-
+@AllArgsConstructor()
 public class Client {
+    @NonNull
     String url;
+    @NonNull
     HttpHeaders headers;
+    @NonNull
     RestTemplate restTemplate;
 
-    public Client(String url, HttpHeaders headers, RestTemplate restTemplate) {
-        this.url=url;
-        this.headers=headers;
-        this.restTemplate=restTemplate;
-    }
 
 
-    public ResponseEntity<String> Post(String requestJson) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+    public ResponseEntity<String> post(JSONObject requestJson) {
+        HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
         return response;
     }
 
-    public ResponseEntity<String> Delete(String requestJson) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+    public ResponseEntity<String> delete(JSONObject requestJson) {
+        HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
         return restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 
     }
 
-    public ResponseEntity<String> Put(String requestJson) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+    public ResponseEntity<String> put(JSONObject requestJson) {
+        HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
         return restTemplate.exchange(url,HttpMethod.PUT,entity,String.class);
 
     }
 
-    public ResponseEntity<String> getwithParmUrl(String requestJson, String withParmUrl) {
+    public ResponseEntity<String> getWithParmUrl(String requestJson, String withParmUrl) {
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
 
         return restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
     }
 
-    public UUID getIDsbyWebhook(String webhook) {
+    public String getIDbyWebhook(String webhook) {
         HttpEntity<String> entity = new HttpEntity<>( headers);
-        ResponseEntity<ArrayList<SlackChannel>> response =restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<ArrayList<SlackChannel>>() {
+        ResponseEntity<List<SlackChannel>> response =restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<List<SlackChannel>>() {
         });
-        ArrayList<SlackChannel> channels = response.getBody();
-        for (int i=0;i<channels.size();i++){
-            if(channels.get(i).getWebhook().equals(webhook))
-                return channels.get(i).getId();
+        List<SlackChannel> channels = response.getBody();
+        for (SlackChannel channel : channels) {
+            if (channel.getWebhook().equals(webhook))
+                return channel.getId().toString();
         }
      return null;
     }
-    public ResponseEntity<ArrayList<?>> getAllChannels() {
+    public ResponseEntity<List<SlackChannel>> getAllChannels() {
         HttpEntity<String> entity = new HttpEntity<>( headers);
-        return restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<ArrayList<?>>() {
+        return restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<List<SlackChannel>>() {
         });
 
     }
