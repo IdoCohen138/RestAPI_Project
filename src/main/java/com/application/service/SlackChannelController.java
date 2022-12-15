@@ -19,15 +19,9 @@ public class SlackChannelController implements Business {
     SlackIntegration slackIntegration;
 
     @Override
-    public void createChannel(SlackChannel slackChannel)  {
+    public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
-        try {
-            channelRepository.createChannel(slackChannel);
-        }
-        catch (ChannelAlreadyExitsInDataBaseException e){
-            System.out.println(e.getMessage());
-
-        }
+        channelRepository.createChannel(slackChannel);
         try {
             if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
