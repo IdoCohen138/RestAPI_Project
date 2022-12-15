@@ -8,12 +8,9 @@ import java.util.UUID;
 
 public interface Repository {
 
-
     void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException;
 
-    SlackChannel updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
-
-    SlackChannel deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
+    SlackChannel deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException;
 
     SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException;
 

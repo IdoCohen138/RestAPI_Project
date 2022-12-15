@@ -41,36 +41,36 @@ public class ChannelRepositoryTest {
 
     }
 
-    @Test
-    void updateChannelTestSuccess() {
-        assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        assertDoesNotThrow(() -> ChannelRepository.updateChannel(slackChannel));
-        assertEquals(slackChannel.getStatus(), channels.get(0).getStatus());
+//    @Test
+//    void updateChannelTestSuccess() {
+//        assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
+//        assertDoesNotThrow(() -> ChannelRepository.updateChannel(slackChannel));
+//        assertEquals(slackChannel.getStatus(), channels.get(0).getStatus());
+//
+//    }
+//
+//    @Test
+//    void updateChannel_no_slack_channel_to_update_TestFail() {
+//        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+//            ChannelRepository.updateChannel(slackChannel);
+//        });
+//    }
 
-    }
 
-    @Test
-    void updateChannel_no_slack_channel_to_update_TestFail() {
-        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
-            ChannelRepository.updateChannel(slackChannel);
-        });
-    }
-
-
-    @Test
-    void deleteChannelTestSuccess() {
-
-        assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
-        assertDoesNotThrow(() -> ChannelRepository.deleteChannel(slackChannel));
-        assertEquals(0, channels.size());
-    }
-
-    @Test
-    void deleteChannel_no_slack_channel_to_delete_TestFail() {
-        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
-            ChannelRepository.deleteChannel(slackChannel);
-        });
-    }
+//    @Test
+//    void deleteChannelTestSuccess() {
+//
+//        assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
+//        assertDoesNotThrow(() -> ChannelRepository.deleteChannel(slackChannel));
+//        assertEquals(0, channels.size());
+//    }
+//
+//    @Test
+//    void deleteChannel_no_slack_channel_to_delete_TestFail() {
+//        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+//            ChannelRepository.deleteChannel(slackChannel);
+//        });
+//    }
 
 
     @Test

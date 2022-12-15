@@ -10,9 +10,9 @@ public interface Business {
 
     void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException;
 
-    void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
+    void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException;
 
-    void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
+    void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException;
 
     SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException;
 
