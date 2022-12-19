@@ -30,7 +30,6 @@ public class ChannelRepositoryTest {
         Field channels_ = ChannelRepository.getClass().getDeclaredField("channels");
         channels_.setAccessible(true);
         channels = (ArrayList<SlackChannel>) channels_.get(ChannelRepository);
-
     }
 
 
@@ -39,12 +38,10 @@ public class ChannelRepositoryTest {
         assertEquals(0, channels.size());
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
         assertEquals(1, channels.size());
-
     }
 
     @Test
     void deleteChannelTestSuccess() {
-
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
         assertDoesNotThrow(() -> ChannelRepository.deleteChannel(slackChannel.getId()));
         assertEquals(0, channels.size());
@@ -64,7 +61,6 @@ public class ChannelRepositoryTest {
         SlackChannel slackChannelreturn =
                 assertDoesNotThrow(() -> ChannelRepository.getChannel(slackChannel.getId()));
         assertEquals(slackChannelreturn, slackChannel);
-
     }
 
     @Test
@@ -81,7 +77,6 @@ public class ChannelRepositoryTest {
         List<SlackChannel> slackChannelreturn_enable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.ENABLED));
         assertEquals(slackChannelreturn_enable, channels);
-
     }
 
     @Test
@@ -90,7 +85,6 @@ public class ChannelRepositoryTest {
         List<SlackChannel> slackChannelreturn_disable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.DISABLED));
         assertEquals(slackChannelreturn_disable.size(), 0);
-
     }
 
     @Test
@@ -99,7 +93,6 @@ public class ChannelRepositoryTest {
         List<SlackChannel> slackChannelreturn_disable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.DISABLED));
         assertEquals(slackChannelreturn_disable, channels);
-
     }
 
     @Test
@@ -109,7 +102,6 @@ public class ChannelRepositoryTest {
         List<SlackChannel> slackChannelreturn_enable =
                 assertDoesNotThrow(() -> ChannelRepository.getChannels(EnumStatus.ENABLED));
         assertEquals(slackChannelreturn_enable.size(), 0);
-
     }
 
 

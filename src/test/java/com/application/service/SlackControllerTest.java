@@ -4,6 +4,7 @@ import com.application.persistence.ChannelRepository;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.exceptions.SlackMessageNotSentException;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ public class SlackControllerTest {
     SlackChannel slackChannel;
     List<SlackChannel> slackChannels;
 
-
+    @Before
     @BeforeEach
     public void setUp() {
         slackChannel = new SlackChannel();
@@ -63,12 +64,11 @@ public class SlackControllerTest {
         Mockito.verify(slackIntegration,Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
     }
 
-//    @Test
-//    public void updateChannelTestFail_null_slack_channel() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
-//        Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenReturn(null);
-//        slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
-//        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
-//    }
+    @org.junit.Test(expected = ChannelNotExitsInDataBaseException.class)
+    public void updateChannelTestFail_null_slack_channel() throws ChannelNotExitsInDataBaseException {
+        Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));
+        slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
+    }
 
     @Test
     public void deleteChannelTestSuccess() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
@@ -79,13 +79,11 @@ public class SlackControllerTest {
 
     }
 
-//    @Test
-//    public void deleteChannelTestFail_null_slack_channel() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
-//        Mockito.when(channelRepository.deleteChannel(slackChannel.getId())).thenReturn(null);
-//        slackChannelController.deleteChannel(slackChannel.getId());
-//        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "This channel not exits in the database");
-//
-//    }
+    @org.junit.Test(expected = ChannelNotExitsInDataBaseException.class)
+    public void deleteChannelTestFail_null_slack_channel() throws ChannelNotExitsInDataBaseException {
+        Mockito.when(channelRepository.deleteChannel(slackChannel.getId())).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));
+        slackChannelController.deleteChannel(slackChannel.getId());
+    }
 
     @Test
     public void sendPeriodicMessagesTestSuccess() throws SlackMessageNotSentException {
