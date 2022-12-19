@@ -5,14 +5,21 @@ import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
+@ExtendWith(MockitoExtension.class)
 public class SlackIntegrationTest {
 
+    @InjectMocks
+    @Resource
     SlackIntegration slackIntegration;
 
     @Mock
@@ -22,10 +29,10 @@ public class SlackIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         set_slackChannel_properties();
-        slackIntegration = new SlackIntegration();
-        slackIntegration.setSlack(slack);
+//        slackIntegration = new SlackIntegration();
+//        slackIntegration.setSlack(slack);
     }
 
 

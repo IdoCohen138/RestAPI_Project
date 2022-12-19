@@ -43,8 +43,6 @@ public class SlackControllerTest {
         slackChannels.add(slackChannel);
 
     }
-
-    @Test
     public void createChannelTestSuccess() throws ChannelAlreadyExitsInDataBaseException, SlackMessageNotSentException {
         slackChannelController.createChannel(slackChannel);
         Mockito.verify(channelRepository).createChannel(slackChannel);

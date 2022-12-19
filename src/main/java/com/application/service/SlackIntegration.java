@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 @Service
+//@Component("SlackIntegration")
 public class SlackIntegration {
 
-    Slack slack = Slack.getInstance();
+    @Autowired
+    Slack slack;
 
     public WebhookResponse sendMessage(SlackChannel slackChannel, String message) throws SlackMessageNotSentException {
         Payload payload = Payload.builder().text(message).build();
@@ -26,5 +28,5 @@ public class SlackIntegration {
             throw new SlackMessageNotSentException("Message didn't send to slack");
         }
     }
-    public void setSlack(Slack slack) { this.slack = slack; }
+//    public void setSlack(Slack slack) { this.slack = slack; }
 }
