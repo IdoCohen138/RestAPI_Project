@@ -19,15 +19,9 @@ public class SlackChannelController implements Business {
     SlackIntegration slackIntegration;
 
     @Override
-    public void createChannel(SlackChannel slackChannel)  {
+    public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
-        try {
-            channelRepository.createChannel(slackChannel);
-        }
-        catch (ChannelAlreadyExitsInDataBaseException e){
-            System.out.println(e.getMessage());
-
-        }
+        channelRepository.createChannel(slackChannel);
         try {
             if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
@@ -38,44 +32,29 @@ public class SlackChannelController implements Business {
     }
 
     @Override
-    public void updateChannel(SlackChannel slackChannel)  {
+    public void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException {
+        SlackChannel modifyChannel = getChannel(id);
+        modifyChannel.setStatus(status);
         try {
-            SlackChannel modifyChannel = channelRepository.updateChannel(slackChannel);
-            if (modifyChannel==null) return;
-            modifyChannel.setStatus(slackChannel.getStatus());
-        try {
-            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+            if (modifyChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
             slackIntegration.sendMessage(modifyChannel, "Channel's status has been updated");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
-
-        }catch (ChannelNotExitsInDataBaseException e) {
-            System.out.println(e.getMessage());
-
-        }
     }
 
     @Override
-    public void deleteChannel(SlackChannel slackChannel){
+    public void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
+        SlackChannel deleteChannel = channelRepository.deleteChannel(id);
         try {
-            SlackChannel deleteChannel = channelRepository.deleteChannel(slackChannel);
-        if (deleteChannel==null) return;
-
-        try {
-            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+            if (deleteChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
             slackIntegration.sendMessage(deleteChannel, "Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
-        }catch (ChannelNotExitsInDataBaseException e) {
-            System.out.println(e.getMessage());
-
-        }
     }
-
 
     @Override
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
