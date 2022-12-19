@@ -2,6 +2,7 @@ package com.application.business;
 
 import com.application.service.EnumStatus;
 import com.application.utils.Client;
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,17 +29,17 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class EndPointTest {
+public class EndToEndTest {
 
     RestTemplate restTemplate;
-    String url;
+    URI url;
     HttpHeaders headers;
     private Client myClient;
     private String id;
     private String status;
 
     private static Stream<Arguments> webhooks() throws IOException {
-        InputStream inputStream = EndPointTest.class.getClassLoader().getResourceAsStream("config.properties");
+        InputStream inputStream = EndToEndTest.class.getClassLoader().getResourceAsStream("config.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
         String webhook_message_api = properties.getProperty("webhook_message_api");
@@ -45,10 +50,11 @@ public class EndPointTest {
         );
     }
 
+    @SneakyThrows
     @BeforeEach
-    public void setup() {
+    public void setup()   {
         restTemplate = new RestTemplate();
-        url = "http://localhost:8080" + "/channels";
+        url =new URI("http://localhost:8080/channels");
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));

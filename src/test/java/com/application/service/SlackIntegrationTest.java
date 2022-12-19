@@ -31,8 +31,6 @@ public class SlackIntegrationTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         set_slackChannel_properties();
-//        slackIntegration = new SlackIntegration();
-//        slackIntegration.setSlack(slack);
     }
 
 

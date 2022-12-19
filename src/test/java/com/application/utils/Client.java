@@ -8,12 +8,14 @@ import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 @AllArgsConstructor()
 public class Client {
     @NonNull
-    String url;
+    URI url;
     @NonNull
     HttpHeaders headers;
     @NonNull
@@ -23,8 +25,7 @@ public class Client {
 
     public ResponseEntity<String> post(JSONObject requestJson) {
         HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        return response;
+        return restTemplate.postForEntity(url, entity, String.class);
     }
 
     public ResponseEntity<String> delete(JSONObject requestJson) {
