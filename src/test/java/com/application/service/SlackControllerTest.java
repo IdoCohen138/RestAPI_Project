@@ -66,6 +66,7 @@ public class SlackControllerTest {
         Mockito.verify(slackIntegration,Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
     }
 
+
     @Test
     public void updateChannelTestFail_null_slack_channel() throws ChannelNotExitsInDataBaseException {
         Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));

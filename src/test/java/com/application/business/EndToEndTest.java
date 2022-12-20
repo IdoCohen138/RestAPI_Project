@@ -36,8 +36,6 @@ public class EndToEndTest {
     UriComponents uriComponentsWithID;
     UriComponents uriComponentsWithStatus;
     private Client myClient;
-    private String id;
-    private String status;
 
     private static Stream<Arguments> webhooks() throws IOException {
         InputStream inputStream = EndToEndTest.class.getClassLoader().getResourceAsStream("config.properties");
@@ -59,6 +57,7 @@ public class EndToEndTest {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        array=new ArrayList<SlackChannel>();
         uriComponentsWithID = UriComponentsBuilder.newInstance()
                 .scheme("http").host("localhost").port(8080).path("channels/{id}").build();
         uriComponentsWithStatus = UriComponentsBuilder.newInstance()
@@ -71,7 +70,6 @@ public class EndToEndTest {
     @ParameterizedTest
     @MethodSource("webhooks")
     public void endToEndTestSuccess(String webhook, String channelName) throws IOException {
-        List<SlackChannel> array = new ArrayList<>();
         Assertions.assertEquals(myClient.getAllChannels().getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
         Assertions.assertEquals(myClient.post(jasonByParams(webhook, channelName)).getStatusCode(), HttpStatus.OK);
