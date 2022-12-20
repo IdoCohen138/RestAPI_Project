@@ -1,6 +1,7 @@
 package com.application.business;
 
 import com.application.service.EnumStatus;
+import com.application.service.SlackChannel;
 import com.application.utils.Client;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
@@ -13,27 +14,27 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Stream;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class EndToEndTest {
 
     RestTemplate restTemplate;
-    URI url;
+    URL url;
     HttpHeaders headers;
+    List<SlackChannel> array;
+    SlackChannel slackChannel;
+    UriComponents uriComponentsWithID;
+    UriComponents uriComponentsWithStatus;
     private Client myClient;
     private String id;
     private String status;
@@ -52,58 +53,72 @@ public class EndToEndTest {
 
     @SneakyThrows
     @BeforeEach
-    public void setup()   {
+    public void setup() {
         restTemplate = new RestTemplate();
-        url =new URI("http://localhost:8080/channels");
+        url = new URL("http://localhost:8080/channels");
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        myClient = new Client(url, headers, restTemplate);
-        id = "/?id=";
-        status = "/?status=";
+        uriComponentsWithID = UriComponentsBuilder.newInstance()
+                .scheme("http").host("localhost").port(8080).path("channels/{id}").build();
+        uriComponentsWithStatus = UriComponentsBuilder.newInstance()
+                .scheme("http").host("localhost").port(8080)
+                .path("channels/").query("status={status}").build();
+        myClient = new Client(url.toURI(), headers, restTemplate, uriComponentsWithID.toUri(), uriComponentsWithStatus.toUri());
+
     }
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void endToEndTestSuccess(String webhook, String channelName) {
-        Assertions.assertEquals(myClient.post(jasonByParams(webhook, channelName)).getStatusCode(), HttpStatus.OK);
-        String channelID = myClient.getIDbyWebhook(webhook);
-        JSONObject requestBodyWithEnabledStatus = jasonByParams(channelID, EnumStatus.ENABLED);
-        Assertions.assertEquals(myClient.put(requestBodyWithEnabledStatus).getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.getWithParmUrl(webhook, url + id + channelID).getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.getWithParmUrl(webhook, url + status + EnumStatus.ENABLED).getStatusCode(), HttpStatus.OK);
-        JSONObject requestBodyWithDisablesStatus = jasonByParams(channelID, EnumStatus.DISABLED);
-        Assertions.assertEquals(myClient.put(requestBodyWithDisablesStatus).getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.getWithParmUrl(webhook, url + status + EnumStatus.DISABLED).getStatusCode(), HttpStatus.OK);
+    public void endToEndTestSuccess(String webhook, String channelName) throws IOException {
+        List<SlackChannel> array = new ArrayList<>();
         Assertions.assertEquals(myClient.getAllChannels().getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.delete(requestBodyWithDisablesStatus).getStatusCode(), HttpStatus.OK);
-        JSONObject nullID = jasonByParams("nullID", EnumStatus.DISABLED);
-        Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            myClient.put(nullID);
-        });
-        Assertions.assertThrows(HttpClientErrorException.class, () -> {
-            myClient.delete(nullID);
-        });
+        Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
+        Assertions.assertEquals(myClient.post(jasonByParams(webhook, channelName)).getStatusCode(), HttpStatus.OK);
+        UUID channelID = myClient.getIDbyWebhook(webhook);
+        myClient.setUrlWithID(uriComponentsWithID.expand(channelID.toString()).toUri());
+        createSlackChannel(channelID, webhook);
+        array.add(slackChannel);
+        Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
+        slackChannel.setStatus(EnumStatus.DISABLED);
+        JSONObject requestBodyWithDisabledStatus = jasonByParams(EnumStatus.DISABLED);
+        Assertions.assertEquals(myClient.put(requestBodyWithDisabledStatus).getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(myClient.getSpecificChannel().getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(myClient.getSpecificChannel().getBody().getStatus(), slackChannel.getStatus());
+        myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.DISABLED.toString()).toUri());
+        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), array);
+        myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.ENABLED.toString()).toUri());
+        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), new ArrayList<>());
+        Assertions.assertEquals(myClient.delete().getStatusCode(), HttpStatus.OK);
+        array.remove(slackChannel);
+        Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
     }
 
 
-    private JSONObject jasonByParams(String webhook, String channelName, String id, EnumStatus enumStatus) {
+    private JSONObject jasonByParams(String webhook, String channelName, EnumStatus enumStatus) {
         Map<String, Object> map = new HashMap<>();
         if (webhook != null) map.put("webhook", webhook);
         if (channelName != null) map.put("channelName", channelName);
-        if (id != null) map.put("id", id);
         if (enumStatus != null) map.put("status", enumStatus);
         return new JSONObject(map);
     }
 
     private JSONObject jasonByParams(String webhook, String channelName) {
-        return jasonByParams(webhook, channelName, null, null);
+        return jasonByParams(webhook, channelName, null);
     }
 
-    private JSONObject jasonByParams(String webhook, EnumStatus enumStatus) {
-        return jasonByParams(null, null, webhook, enumStatus);
+    private JSONObject jasonByParams(EnumStatus enumStatus) {
+        return jasonByParams(null, null, enumStatus);
     }
 
+    private void createSlackChannel(UUID id, String webhook) throws IOException {
+        slackChannel = new SlackChannel();
+        slackChannel.setId(id);
+        slackChannel.setWebhook(webhook);
+        slackChannel.setStatus(EnumStatus.ENABLED);
+
+    }
 
 }
 

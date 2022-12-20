@@ -2,6 +2,7 @@ package com.application.utils;
 
 import com.application.service.SlackChannel;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import net.minidev.json.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -10,16 +11,21 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-@AllArgsConstructor()
+@AllArgsConstructor() @Setter
 public class Client {
     @NonNull
-    URI url;
+    private URI url;
     @NonNull
-    HttpHeaders headers;
+    private HttpHeaders headers;
     @NonNull
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
+    private URI urlWithID;
+    private URI urlWithStatus;
+
+
 
 
 
@@ -28,38 +34,47 @@ public class Client {
         return restTemplate.postForEntity(url, entity, String.class);
     }
 
-    public ResponseEntity<String> delete(JSONObject requestJson) {
-        HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
-        return restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+    public ResponseEntity<String> delete( ) {
+        HttpEntity<JSONObject> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(urlWithID, HttpMethod.DELETE, entity, String.class);
 
     }
 
     public ResponseEntity<String> put(JSONObject requestJson) {
         HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
-        return restTemplate.exchange(url,HttpMethod.PUT,entity,String.class);
+        return restTemplate.exchange(urlWithID,HttpMethod.PUT,entity,String.class);
 
     }
 
-    public ResponseEntity<String> getWithParmUrl(String requestJson, String withParmUrl) {
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+    public ResponseEntity<SlackChannel> getSpecificChannel() {
+        HttpEntity<SlackChannel> entity = new HttpEntity<>( headers);
 
-        return restTemplate.exchange(withParmUrl,HttpMethod.GET,entity,String.class);
+        return restTemplate.exchange(urlWithID,HttpMethod.GET,entity,SlackChannel.class);
     }
 
-    public String getIDbyWebhook(String webhook) {
+    public UUID getIDbyWebhook(String webhook) {
         HttpEntity<String> entity = new HttpEntity<>( headers);
         ResponseEntity<List<SlackChannel>> response =restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<List<SlackChannel>>() {
         });
         List<SlackChannel> channels = response.getBody();
         for (SlackChannel channel : channels) {
             if (channel.getWebhook().equals(webhook))
-                return channel.getId().toString();
+                return channel.getId();
         }
      return null;
     }
-    public ResponseEntity<List<SlackChannel>> getAllChannels() {
+
+
+    public ResponseEntity<ArrayList<SlackChannel>> getAllChannels() {
         HttpEntity<String> entity = new HttpEntity<>( headers);
-        return restTemplate.exchange(url,HttpMethod.GET,entity, new ParameterizedTypeReference<List<SlackChannel>>() {
+        return restTemplate.exchange(this.url,HttpMethod.GET,entity, new ParameterizedTypeReference<ArrayList<SlackChannel>>() {
+        });
+
+    }
+
+    public ResponseEntity<List<SlackChannel>> getAllChannelsWithStatus() {
+        HttpEntity<String> entity = new HttpEntity<>( headers);
+        return restTemplate.exchange(urlWithStatus,HttpMethod.GET,entity, new ParameterizedTypeReference<List<SlackChannel>>() {
         });
 
     }

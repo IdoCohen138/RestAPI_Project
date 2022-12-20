@@ -5,6 +5,7 @@ import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseExcep
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.exceptions.SlackMessageNotSentException;
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -64,10 +66,12 @@ public class SlackControllerTest {
         Mockito.verify(slackIntegration,Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
     }
 
-    @org.junit.Test(expected = ChannelNotExitsInDataBaseException.class)
+    @Test
     public void updateChannelTestFail_null_slack_channel() throws ChannelNotExitsInDataBaseException {
         Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));
-        slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
+        Assertions.assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+            slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
+        });
     }
 
     @Test
@@ -79,11 +83,13 @@ public class SlackControllerTest {
 
     }
 
-    @org.junit.Test(expected = ChannelNotExitsInDataBaseException.class)
+    @Test
     public void deleteChannelTestFail_null_slack_channel() throws ChannelNotExitsInDataBaseException {
         Mockito.when(channelRepository.deleteChannel(slackChannel.getId())).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));
-        slackChannelController.deleteChannel(slackChannel.getId());
+        Assertions.assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+            slackChannelController.deleteChannel(slackChannel.getId()); });
     }
+
 
     @Test
     public void sendPeriodicMessagesTestSuccess() throws SlackMessageNotSentException {
