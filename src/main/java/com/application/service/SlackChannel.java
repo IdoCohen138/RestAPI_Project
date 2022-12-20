@@ -18,6 +18,5 @@ public class SlackChannel {
     @EqualsAndHashCode.Exclude @NotNull(message = "The request must contain channel name! (channelName)")
     private String channelName;
     @EqualsAndHashCode.Exclude
-    private EnumStatus status = EnumStatus.ENABLED;
-
+    private EnumStatus status;
 }

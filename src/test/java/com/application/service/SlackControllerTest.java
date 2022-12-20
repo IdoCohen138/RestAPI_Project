@@ -40,6 +40,7 @@ public class SlackControllerTest {
     @BeforeEach
     public void setUp() {
         slackChannel = new SlackChannel();
+        slackChannel.setStatus(EnumStatus.ENABLED);
         MockitoAnnotations.openMocks(this);
         slackChannels = new ArrayList<>();
         slackChannels.add(slackChannel);
