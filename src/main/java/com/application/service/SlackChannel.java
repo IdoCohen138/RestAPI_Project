@@ -2,13 +2,10 @@ package com.application.service;
 
 import lombok.*;
 
-
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-@Data
-@Getter
-@Setter
+@Data @Getter @Setter
 @EqualsAndHashCode
 public class SlackChannel {
 
