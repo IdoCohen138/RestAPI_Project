@@ -6,18 +6,18 @@ import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException
 import java.util.List;
 import java.util.UUID;
 
-public interface PersistenceInterface {
+public interface Business {
 
+    void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException;
 
-    void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException;
+    void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException;
 
-    SlackChannel updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
-
-    SlackChannel deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException;
+    void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException;
 
     SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException;
 
     List<SlackChannel> getChannels(EnumStatus filter);
 
     List<SlackChannel> getAllChannels();
+
 }

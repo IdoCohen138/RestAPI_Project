@@ -11,16 +11,21 @@ import java.util.List;
 import java.util.UUID;
 
 @Component("slackcontroller")
-public class SlackChannelController implements BusinessInterface {
+public class SlackChannelController implements Business {
     @Autowired
-    PersistenceInterface persistenceInterface;
-    SlackIntegration slackIntegration = new SlackIntegration();
+    Repository channelRepository;
+
+    @Autowired
+    SlackIntegration slackIntegration;
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
-        persistenceInterface.createChannel(slackChannel);
-
+        if (slackChannel.getStatus()!=null && slackChannel.getStatus().equals(EnumStatus.DISABLED))
+            slackChannel.setStatus(EnumStatus.DISABLED);
+        else
+            slackChannel.setStatus(EnumStatus.ENABLED);
+        channelRepository.createChannel(slackChannel);
         try {
             if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
@@ -31,11 +36,11 @@ public class SlackChannelController implements BusinessInterface {
     }
 
     @Override
-    public void updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel modifyChannel = persistenceInterface.updateChannel(slackChannel);
-        modifyChannel.setStatus(slackChannel.getStatus());
+    public void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException {
+        SlackChannel modifyChannel = getChannel(id);
+        modifyChannel.setStatus(status);
         try {
-            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+            if (modifyChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
             slackIntegration.sendMessage(modifyChannel, "Channel's status has been updated");
         } catch (SlackMessageNotSentException e) {
@@ -44,10 +49,10 @@ public class SlackChannelController implements BusinessInterface {
     }
 
     @Override
-    public void deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel deleteChannel = persistenceInterface.deleteChannel(slackChannel);
+    public void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
+        SlackChannel deleteChannel = channelRepository.deleteChannel(id);
         try {
-            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+            if (deleteChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
             slackIntegration.sendMessage(deleteChannel, "Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
@@ -57,22 +62,22 @@ public class SlackChannelController implements BusinessInterface {
 
     @Override
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
-        return persistenceInterface.getChannel(uuid);
+        return channelRepository.getChannel(uuid);
     }
 
     @Override
     public List<SlackChannel> getChannels(EnumStatus filter) {
-        return persistenceInterface.getChannels(filter);
+        return channelRepository.getChannels(filter);
     }
 
     @Override
     public List<SlackChannel> getAllChannels() {
-        return persistenceInterface.getAllChannels();
+        return channelRepository.getAllChannels();
     }
 
     @Scheduled(cron = "0 0 10 * * *")
     public void sendPeriodicMessages() {
-        for (SlackChannel slackChannel: persistenceInterface.getChannels(EnumStatus.ENABLED)) {
+        for (SlackChannel slackChannel: channelRepository.getChannels(EnumStatus.ENABLED)) {
             try{
                 slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities");
             }
