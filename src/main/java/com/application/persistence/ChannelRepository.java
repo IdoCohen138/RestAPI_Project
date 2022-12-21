@@ -4,7 +4,7 @@ import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseExcep
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.EnumStatus;
 import com.application.service.SlackChannel;
-import com.application.service.PersistenceInterface;
+import com.application.service.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,31 +12,23 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ChannelRepository implements PersistenceInterface {
+public class ChannelRepository implements Repository {
 
     private final List<SlackChannel> channels = new ArrayList<>();
 
     @Override
     public void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException {
-        if (!channelExists(newChannel)){
+        if (!channelExistsByWebhook(newChannel)){
             channels.add(newChannel);
             return;
         }
         throw new ChannelAlreadyExitsInDataBaseException("This channel already exits in database");
     }
 
-    @Override
-    public SlackChannel updateChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel channel = getChannel(slackChannel);
-        if (channel == null) {
-            throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
-        }
-        return channel;
-    }
 
     @Override
-    public SlackChannel deleteChannel(SlackChannel slackChannel) throws ChannelNotExitsInDataBaseException {
-        SlackChannel deletedChannel = deleteChannelFromData(slackChannel);
+    public SlackChannel deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
+        SlackChannel deletedChannel = deleteChannelFromData(id);
         if (deletedChannel == null)
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         return deletedChannel;
@@ -44,13 +36,10 @@ public class ChannelRepository implements PersistenceInterface {
 
     @Override
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
-        SlackChannel toSearch = new SlackChannel();
-        toSearch.setId(uuid);
-        SlackChannel channel = getChannel(toSearch);
-        if (channel == null) {
+        if (!channelExistsById(uuid)){
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
-        return channel;
+        return getChannelById(uuid);
     }
 
     @Override
@@ -63,9 +52,10 @@ public class ChannelRepository implements PersistenceInterface {
         return channels;
     }
 
-    public SlackChannel getChannel(SlackChannel channel) {
+
+    private SlackChannel getChannelById(UUID id) {
         for (SlackChannel modifyChannel : channels) {
-            if (channel.equals(modifyChannel))
+            if (id.equals(modifyChannel.getId()))
                 return modifyChannel;
         }
         return null;
@@ -79,17 +69,17 @@ public class ChannelRepository implements PersistenceInterface {
         return null;
     }
 
-    public SlackChannel deleteChannelFromData(SlackChannel slackChannel) {
-        SlackChannel toRemove = getChannel(slackChannel);
-        if (toRemove != null) {
-            channels.remove(toRemove);
-            return toRemove;
+    private SlackChannel deleteChannelFromData(UUID id) {
+        if(channelExistsById(id)){
+            SlackChannel deletedChannel = getChannelById(id);
+            channels.remove(deletedChannel);
+            return deletedChannel;
         }
         return null;
     }
 
-    public ArrayList<SlackChannel> sortArrayByFiltering(EnumStatus filter) {
-        ArrayList<SlackChannel> filterArray = new ArrayList<>();
+    private List<SlackChannel> sortArrayByFiltering(EnumStatus filter) {
+        List<SlackChannel> filterArray = new ArrayList<>();
         for (SlackChannel channel : channels) {
             if (channel.getStatus().equals(filter))
                 filterArray.add(channel);
@@ -97,7 +87,11 @@ public class ChannelRepository implements PersistenceInterface {
         return filterArray;
     }
 
-    public Boolean channelExists(SlackChannel channel){
+    private Boolean channelExistsByWebhook(SlackChannel channel){
         return getChannelByWebhook(channel.getWebhook()) != null;
+    }
+
+    private boolean channelExistsById(UUID id) {
+        return getChannelById(id) != null;
     }
 }
