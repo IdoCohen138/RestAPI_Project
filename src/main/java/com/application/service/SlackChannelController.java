@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class SlackChannelController implements Business {
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
         slackChannel.setId(UUID.randomUUID());
+        slackChannel.setCreated_at(new Date());
         if (slackChannel.getStatus()!=null && slackChannel.getStatus().equals(EnumStatus.DISABLED))
             slackChannel.setStatus(EnumStatus.DISABLED);
         else
@@ -38,6 +40,7 @@ public class SlackChannelController implements Business {
     @Override
     public void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException {
         SlackChannel modifyChannel = getChannel(id);
+        modifyChannel.setModified_at(new Date());
         modifyChannel.setStatus(status);
         try {
             if (modifyChannel.getStatus().equals(EnumStatus.DISABLED))

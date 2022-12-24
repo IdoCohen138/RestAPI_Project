@@ -3,6 +3,8 @@ package com.application.service;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.UUID;
 
 @Data @Getter @Setter
@@ -16,4 +18,9 @@ public class SlackChannel {
     private String channelName;
     @EqualsAndHashCode.Exclude
     private EnumStatus status;
+    @EqualsAndHashCode.Exclude
+    private Date created_at;
+    @EqualsAndHashCode.Exclude
+    private Date modified_at;
+
 }
