@@ -8,6 +8,7 @@ import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseExcep
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component("slackcontroller")
@@ -19,24 +20,24 @@ public class SlackChannelController implements Business {
     SlackIntegration slackIntegration;
 
     @Override
-    public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
-        slackChannel.setId(UUID.randomUUID());
-        if (slackChannel.getStatus()!=null && slackChannel.getStatus().equals(EnumStatus.DISABLED))
-            slackChannel.setStatus(EnumStatus.DISABLED);
+    public void createChannel(SlackChannel slackChannel_) throws ChannelAlreadyExitsInDataBaseException {
+        slackChannel_.setId(UUID.randomUUID());
+        if (slackChannel_.getStatus()!=null && slackChannel_.getStatus().equals(EnumStatus.DISABLED))
+            slackChannel_.setStatus(EnumStatus.DISABLED);
         else
-            slackChannel.setStatus(EnumStatus.ENABLED);
-        channelRepository.createChannel(slackChannel);
+            slackChannel_.setStatus(EnumStatus.ENABLED);
+        channelRepository.createChannel(slackChannel_);
         try {
-            if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
+            if (slackChannel_.getStatus().equals(EnumStatus.DISABLED))
                 return;
-            slackIntegration.sendMessage(slackChannel, "New channel has been created");
+            slackIntegration.sendMessage(slackChannel_, "New channel has been created");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
     }
 
     @Override
-    public void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException {
+    public void updateChannel(UUID id, String status) throws ChannelNotExitsInDataBaseException {
         SlackChannel modifyChannel = getChannel(id);
         modifyChannel.setStatus(status);
         try {
@@ -50,11 +51,14 @@ public class SlackChannelController implements Business {
 
     @Override
     public void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
-        SlackChannel deleteChannel = channelRepository.deleteChannel(id);
+        SlackChannel slackChannel=getChannel(id);
+        boolean status=true;
+        if (slackChannel!=null && Objects.equals(slackChannel.getStatus(), "DISABLED")) status=false;
         try {
-            if (deleteChannel.getStatus().equals(EnumStatus.DISABLED))
+            channelRepository.deleteChannel(id);
+            if (!status)
                 return;
-            slackIntegration.sendMessage(deleteChannel, "Channel has been deleted");
+            slackIntegration.sendMessage(slackChannel, "Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -66,24 +70,23 @@ public class SlackChannelController implements Business {
     }
 
     @Override
-    public List<SlackChannel> getChannels(EnumStatus filter) {
+    public List<SlackChannel> getChannels(String filter) {
         return channelRepository.getChannels(filter);
     }
-
-    @Override
+        @Override
     public List<SlackChannel> getAllChannels() {
         return channelRepository.getAllChannels();
     }
 
-    @Scheduled(cron = "0 0 10 * * *")
-    public void sendPeriodicMessages() {
-        for (SlackChannel slackChannel: channelRepository.getChannels(EnumStatus.ENABLED)) {
-            try{
-                slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities");
-            }
-            catch (SlackMessageNotSentException slackMessageNotSentException) {
-                System.out.println(slackMessageNotSentException.getMessage());
-            }
-        }
-    }
+//    @Scheduled(cron = "0 0 10 * * *")
+//    public void sendPeriodicMessages() {
+//        for (SlackChannel slackChannel: channelRepository.getChannels(EnumStatus.ENABLED)) {
+//            try{
+//                slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities");
+//            }
+//            catch (SlackMessageNotSentException slackMessageNotSentException) {
+//                System.out.println(slackMessageNotSentException.getMessage());
+//            }
+//        }
+//    }
 }

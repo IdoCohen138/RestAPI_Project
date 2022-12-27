@@ -10,13 +10,13 @@ public interface Business {
 
     void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException;
 
-    void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException;
+    void updateChannel(UUID id, String status) throws ChannelNotExitsInDataBaseException;
 
     void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException;
 
     SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException;
 
-    List<SlackChannel> getChannels(EnumStatus filter);
+    List<SlackChannel> getChannels(String filter);
 
     List<SlackChannel> getAllChannels();
 

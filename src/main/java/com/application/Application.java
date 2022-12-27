@@ -17,6 +17,6 @@ public class Application {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 		SlackChannelController slackChannelController = context.getBean(SlackChannelController.class);
-		slackChannelController.sendPeriodicMessages();
+		//slackChannelController.sendPeriodicMessages();
 		}
 }

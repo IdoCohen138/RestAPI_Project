@@ -26,9 +26,6 @@ public class Client {
     private URI urlWithStatus;
 
 
-
-
-
     public ResponseEntity<String> post(JSONObject requestJson) {
         HttpEntity<JSONObject> entity = new HttpEntity<>(requestJson, headers);
         return restTemplate.postForEntity(url, entity, String.class);

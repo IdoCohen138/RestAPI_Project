@@ -22,9 +22,9 @@ public class EndPoints {
     Business business;
 
     @PostMapping("/channels")
-    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel) {
+    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel__) {
         try {
-            business.createChannel(slackChannel);
+            business.createChannel(slackChannel__);
             return new ResponseEntity<>("The channel has created successful.", HttpStatus.OK);
         } catch (ChannelAlreadyExitsInDataBaseException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
@@ -64,7 +64,7 @@ public class EndPoints {
     }
 
     @RequestMapping(value = "/channels", params = "status")
-    public @ResponseBody ResponseEntity<?> getChannels(@PathParam("status") @RequestParam EnumStatus status) {
+    public @ResponseBody ResponseEntity<?> getChannels(@PathParam("status") @RequestParam String status) {
         List<SlackChannel> channels = business.getChannels(status);
         return new ResponseEntity<>(channels, HttpStatus.OK);
     }

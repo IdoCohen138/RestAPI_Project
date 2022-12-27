@@ -1,12 +1,23 @@
 package com.application.persistence;
 
+//import com.application.persistence.Entities.SlackChannelEntity;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
-import com.application.service.EnumStatus;
 import com.application.service.SlackChannel;
 import com.application.service.Repository;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,84 +25,84 @@ import java.util.UUID;
 @Service
 public class ChannelRepository implements Repository {
 
-    private final List<SlackChannel> channels = new ArrayList<>();
-
     @Override
     public void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException {
-        if (!channelExistsByWebhook(newChannel)){
-            channels.add(newChannel);
-            return;
-        }
-        throw new ChannelAlreadyExitsInDataBaseException("This channel already exits in database");
-    }
-
-
+                Session session = com.application.persistence.HiberanteUtil.currentSession();
+                Transaction tx = session.beginTransaction();
+                try {
+                    session.save(newChannel);
+                    tx.commit();
+                }catch ( Exception e) {
+                    if (tx != null) tx.rollback();
+                    throw new ChannelAlreadyExitsInDataBaseException("This channel already exits in database");
+                }
+                finally {
+                    HiberanteUtil.closeSession();
+                }}
     @Override
-    public SlackChannel deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
-        SlackChannel deletedChannel = deleteChannelFromData(id);
-        if (deletedChannel == null)
+    public void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
+        Session session = com.application.persistence.HiberanteUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            session.delete(getChannel(id));
+            tx.commit();
+        }catch (IllegalArgumentException | ChannelNotExitsInDataBaseException e) {
+            if (tx != null) tx.rollback();
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
-        return deletedChannel;
+        } finally {
+            HiberanteUtil.closeSession();
+
+        }
+
     }
 
     @Override
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
-        if (!channelExistsById(uuid)){
+        Session session = com.application.persistence.HiberanteUtil.currentSession();
+        Transaction tx = session.beginTransaction();
+        SlackChannel slackChannel;
+        try {
+            slackChannel = session.get(SlackChannel.class, uuid);
+            tx.commit();
+        }catch ( Exception e) {
+            if (tx != null) tx.rollback();
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
-        return getChannelById(uuid);
+        finally {
+            HiberanteUtil.closeSession();
+        }
+        return slackChannel;
     }
 
     @Override
-    public List<SlackChannel> getChannels(EnumStatus filter) {
-        return sortArrayByFiltering(filter);
-    }
+    public List<SlackChannel> getChannels(String filter) {
+        Session session = com.application.persistence.HiberanteUtil.currentSession();
+        Transaction tx = session.beginTransaction();
+        List<SlackChannel> list = loadAllData(session,filter);
+        tx.commit();
+        HiberanteUtil.closeSession();
+        return list ;}
 
     @Override
     public List<SlackChannel> getAllChannels() {
-        return channels;
+        Session session = com.application.persistence.HiberanteUtil.currentSession();
+        Transaction tx = session.beginTransaction();
+        List<SlackChannel> list = loadAllData(session,null);
+        tx.commit();
+        HiberanteUtil.closeSession();
+        return list ;
+    }
+    private List<SlackChannel> loadAllData(Session session,String filter) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<SlackChannel> criteria = builder.createQuery(SlackChannel.class);
+        Root<SlackChannel> rootEntry = criteria.from(SlackChannel.class);
+        CriteriaQuery<SlackChannel> all;
+        if(filter !=null)
+            all= criteria.select(rootEntry).where(builder.equal(rootEntry.get("status"), filter));
+        else
+            all = criteria.select(rootEntry);
+        TypedQuery<SlackChannel> allQuery = session.createQuery(all);
+        return allQuery.getResultList();
     }
 
-
-    private SlackChannel getChannelById(UUID id) {
-        for (SlackChannel modifyChannel : channels) {
-            if (id.equals(modifyChannel.getId()))
-                return modifyChannel;
-        }
-        return null;
-    }
-
-    private SlackChannel getChannelByWebhook(String webhook) {
-        for (SlackChannel modifyChannel : channels) {
-            if (webhook.equals(modifyChannel.getWebhook()))
-                return modifyChannel;
-        }
-        return null;
-    }
-
-    private SlackChannel deleteChannelFromData(UUID id) {
-        if(channelExistsById(id)){
-            SlackChannel deletedChannel = getChannelById(id);
-            channels.remove(deletedChannel);
-            return deletedChannel;
-        }
-        return null;
-    }
-
-    private List<SlackChannel> sortArrayByFiltering(EnumStatus filter) {
-        List<SlackChannel> filterArray = new ArrayList<>();
-        for (SlackChannel channel : channels) {
-            if (channel.getStatus().equals(filter))
-                filterArray.add(channel);
-        }
-        return filterArray;
-    }
-
-    private Boolean channelExistsByWebhook(SlackChannel channel){
-        return getChannelByWebhook(channel.getWebhook()) != null;
-    }
-
-    private boolean channelExistsById(UUID id) {
-        return getChannelById(id) != null;
-    }
 }
