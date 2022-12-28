@@ -6,6 +6,8 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.UUID;
 
 @Data @Setter @Getter
@@ -29,6 +31,11 @@ public class SlackChannel implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = -1)
     private EnumStatus status;
+    @EqualsAndHashCode.Exclude
+    private Date created_at;
+    @EqualsAndHashCode.Exclude
+    private Date modified_at;
+
 
 
 
