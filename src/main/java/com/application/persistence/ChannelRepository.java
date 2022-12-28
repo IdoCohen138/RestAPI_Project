@@ -35,14 +35,15 @@ public class ChannelRepository implements Repository {
                 }}
     @Override
     public SlackChannel deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
-        Session session = com.application.persistence.HibernateUtil.getSessionFactory().openSession();
+        Session session = com.application.persistence.HibernateUtil.currentSession();
         Transaction tx = session.beginTransaction();
         SlackChannel slackChannel;
         try {
             slackChannel = session.get(SlackChannel.class, id);
-            session.delete(getChannel(id));
+            session.delete(slackChannel);
+//            slackChannel= (SlackChannel) session.getDelegate();
             tx.commit();
-        }catch (IllegalArgumentException | ChannelNotExitsInDataBaseException e) {
+        }catch (IllegalArgumentException  e) {
             if (tx != null) tx.rollback();
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         } finally {
@@ -54,7 +55,7 @@ public class ChannelRepository implements Repository {
 
     @Override
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
-        Session session = com.application.persistence.HibernateUtil.currentSession();
+        Session session = com.application.persistence.HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         SlackChannel slackChannel;
         try {
@@ -103,7 +104,7 @@ public class ChannelRepository implements Repository {
 
     @Override
     public SlackChannel updateChannel(UUID uuid,EnumStatus status) throws ChannelNotExitsInDataBaseException {
-        Session session = com.application.persistence.HibernateUtil.getSessionFactory().openSession();
+        Session session = com.application.persistence.HibernateUtil.currentSession();
         Transaction tx = session.beginTransaction();
         SlackChannel slackChannel;
         try {

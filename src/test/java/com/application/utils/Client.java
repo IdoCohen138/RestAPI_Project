@@ -62,9 +62,9 @@ public class Client {
     }
 
 
-    public ResponseEntity<ArrayList<SlackChannel>> getAllChannels() {
+    public ResponseEntity<List<SlackChannel>> getAllChannels() {
         HttpEntity<String> entity = new HttpEntity<>( headers);
-        return restTemplate.exchange(this.url,HttpMethod.GET,entity, new ParameterizedTypeReference<ArrayList<SlackChannel>>() {
+        return restTemplate.exchange(this.url,HttpMethod.GET,entity, new ParameterizedTypeReference<List<SlackChannel>>() {
         });
 
     }

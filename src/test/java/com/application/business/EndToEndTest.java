@@ -70,26 +70,61 @@ public class EndToEndTest {
     @ParameterizedTest
     @MethodSource("webhooks")
     public void endToEndTestSuccess(String webhook, String channelName) throws IOException {
-        Assertions.assertEquals(myClient.getAllChannels().getStatusCode(), HttpStatus.OK);
+        checkForNullDB();
+        createAndPostSlackChannel(webhook,channelName);
+        updateStatusDisabled();
+        getOneChannelByStatus();
+        getALlChannelsByStatusDisabled_oneChannel();
+        getALlChannelsByStatusEnabled_emptyList();
+        deleteAndChackEmptyList();
+
+    }
+
+    private void deleteAndChackEmptyList() {
+        Assertions.assertEquals(myClient.delete().getStatusCode(), HttpStatus.OK);
+        array.remove(slackChannel);
         Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
+
+    }
+
+    private void getALlChannelsByStatusEnabled_emptyList() {
+        myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.ENABLED.toString()).toUri());
+        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), new ArrayList<>());
+
+    }
+
+
+    private void getALlChannelsByStatusDisabled_oneChannel() {
+        myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.DISABLED.toString()).toUri());
+        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), array);
+
+    }
+
+    private void getOneChannelByStatus() {
+        Assertions.assertEquals(myClient.getSpecificChannel().getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(myClient.getSpecificChannel().getBody().getStatus(), slackChannel.getStatus());
+
+    }
+
+    private void updateStatusDisabled() {
+        slackChannel.setStatus(EnumStatus.DISABLED);
+        JSONObject requestBodyWithDisabledStatus = jasonByParams(EnumStatus.DISABLED);
+        Assertions.assertEquals(myClient.put(requestBodyWithDisabledStatus).getStatusCode(), HttpStatus.OK);
+    }
+
+    private void createAndPostSlackChannel(String webhook,String channelName) throws IOException {
         Assertions.assertEquals(myClient.post(jasonByParams(webhook, channelName)).getStatusCode(), HttpStatus.OK);
         UUID channelID = myClient.getIDbyWebhook(webhook);
         myClient.setUrlWithID(uriComponentsWithID.expand(channelID.toString()).toUri());
         createSlackChannel(channelID, webhook);
         array.add(slackChannel);
         Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
-        slackChannel.setStatus(EnumStatus.DISABLED);
-        JSONObject requestBodyWithDisabledStatus = jasonByParams(EnumStatus.DISABLED);
-        Assertions.assertEquals(myClient.put(requestBodyWithDisabledStatus).getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.getSpecificChannel().getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.getSpecificChannel().getBody().getStatus(), slackChannel.getStatus());
-        myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.DISABLED.toString()).toUri());
-        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getStatusCode(), HttpStatus.OK);
-        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), array);
-        myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.ENABLED.toString()).toUri());
-        Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), new ArrayList<>());
-        Assertions.assertEquals(myClient.delete().getStatusCode(), HttpStatus.OK);
-        array.remove(slackChannel);
+
+    }
+
+    private void checkForNullDB() {
+        Assertions.assertEquals(myClient.getAllChannels().getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
     }
 
