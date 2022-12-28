@@ -17,25 +17,10 @@ import java.io.InputStream;
 import java.util.Properties;
 
 @org.springframework.context.annotation.Configuration
-public class HibernateUtil{
-    private static final Log log = LogFactory.getLog(HibernateUtil.class);
-    private static final SessionFactory sessionFactory;
+public class HibernateUtil {
     public static final ThreadLocal<Session> session;
+    private static final SessionFactory sessionFactory;
     static String driverClass, connectionUrl, userName, password;
-
-    public static Session currentSession() throws HibernateException {
-        Session s = (Session)session.get();
-        if (s == null) {
-            s = sessionFactory.openSession();
-            session.set(s);
-        }
-        return (Session)s;
-    }
-
-    public static void closeSession() throws HibernateException {
-        Session s = (Session)session.get();
-        session.set((Session) null);
-        if (s != null) { s.close(); } }
 
     static {
 
@@ -50,8 +35,7 @@ public class HibernateUtil{
 
         configuration.setProperties(properties);
 
-        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                .applySettings(configuration.getProperties()).build();
+        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
         MetadataSources sources = new MetadataSources(serviceRegistry);
         sources.addAnnotatedClass(SlackChannel.class);
         Metadata metadata = sources.buildMetadata();
@@ -59,10 +43,26 @@ public class HibernateUtil{
         try {
             sessionFactory = metadata.getSessionFactoryBuilder().build();
         } catch (Throwable var1) {
-            log.error("Initial SessionFactory creation failed.", var1);
             throw new ExceptionInInitializerError(var1);
         }
         session = new ThreadLocal();
+    }
+
+    public static Session currentSession() throws HibernateException {
+        Session s = session.get();
+        if (s == null) {
+            s = sessionFactory.openSession();
+            session.set(s);
+        }
+        return s;
+    }
+
+    public static void closeSession() throws HibernateException {
+        Session s = session.get();
+        session.set(null);
+        if (s != null) {
+            s.close();
+        }
     }
 
     private static Properties readProperties() {
@@ -71,16 +71,14 @@ public class HibernateUtil{
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            e.printStackTrace(); }
+            e.printStackTrace();
+        }
         driverClass = properties.getProperty("spring.datasource.driver-class-name");
         connectionUrl = properties.getProperty("spring.datasource.url");
         userName = properties.getProperty("spring.datasource.username");
         password = properties.getProperty("spring.datasource.password");
         return properties;
     }
-    public static SessionFactory getSessionFactory() {
-
-        return sessionFactory;}
 
 }
 
