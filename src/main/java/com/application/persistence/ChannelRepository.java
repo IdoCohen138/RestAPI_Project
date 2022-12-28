@@ -61,6 +61,8 @@ public class ChannelRepository implements Repository {
         SlackChannel slackChannel;
         try {
             slackChannel = session.get(SlackChannel.class, uuid);
+            if(slackChannel==null){throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
+            }
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();

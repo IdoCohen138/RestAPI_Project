@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.slack.api.model.block.element.RichTextSectionElement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,13 +12,17 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
 @Data
-@Setter
-@Getter
-@EqualsAndHashCode(callSuper = false)
+//@Setter
+//@Getter
+//@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "SlackChannel", schema = "public", catalog = "postgres")
 public class SlackChannel implements Serializable {
@@ -41,15 +46,14 @@ public class SlackChannel implements Serializable {
     private EnumStatus status;
 
     @EqualsAndHashCode.Exclude
+
     @Column(name = "created_at", nullable = false, length = -1)
     @CreationTimestamp
-    @Temporal(TemporalType.DATE)
-    private Date created_at;
+    private LocalDateTime created_at;
     @EqualsAndHashCode.Exclude
     @UpdateTimestamp
-    @Temporal(TemporalType.DATE)
     @Column(name = "modified_at", nullable = false, length = -1)
-    private Date modified_at;
+    private LocalDateTime modified_at;
 
 
 }
