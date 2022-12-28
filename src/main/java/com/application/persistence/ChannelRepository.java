@@ -5,6 +5,7 @@ import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException
 import com.application.service.EnumStatus;
 import com.application.service.SlackChannel;
 import com.application.service.Repository;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Service;
@@ -57,11 +58,14 @@ public class ChannelRepository implements Repository {
     public SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException {
         Session session = com.application.persistence.HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
-        SlackChannel slackChannel;
+        SlackChannel slackChannel=null;
         try {
             slackChannel = session.get(SlackChannel.class, uuid);
+            if(slackChannel==null){
+                throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
+            }
             tx.commit();
-        }catch ( Exception e) {
+        }catch ( ObjectNotFoundException e) {
             if (tx != null) tx.rollback();
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
@@ -73,7 +77,7 @@ public class ChannelRepository implements Repository {
 
     @Override
     public List<SlackChannel> getChannels(EnumStatus filter) {
-        Session session = com.application.persistence.HibernateUtil.currentSession();
+        Session session = com.application.persistence.HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         List<SlackChannel> list = loadAllData(session,filter);
         tx.commit();
