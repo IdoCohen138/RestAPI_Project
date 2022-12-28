@@ -22,9 +22,9 @@ public class EndPoints {
     Business business;
 
     @PostMapping("/channels")
-    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel) {
+    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel__) {
         try {
-            business.createChannel(slackChannel);
+            business.createChannel(slackChannel__);
             return new ResponseEntity<>("The channel has created successful.", HttpStatus.OK);
         } catch (ChannelAlreadyExitsInDataBaseException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);

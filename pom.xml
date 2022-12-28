@@ -42,13 +42,18 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>6.2.3.Final</version>
+			<version>5.4.0.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish </groupId>
-			<artifactId>javax.el </artifactId>
-			<version>3.0.1-b11 </version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.4.0.Final</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.glassfish </groupId>-->
+<!--			<artifactId>javax.el </artifactId>-->
+<!--			<version>3.0.1-b11 </version>-->
+<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/com.slack.api/slack-api-client -->
 		<dependency>
 			<groupId>com.slack.api</groupId>
@@ -60,7 +65,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.10</version>
+		</dependency>
     </dependencies>
 
 	<build>
