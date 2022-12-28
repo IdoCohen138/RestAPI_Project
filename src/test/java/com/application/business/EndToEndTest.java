@@ -70,17 +70,17 @@ public class EndToEndTest {
     @ParameterizedTest
     @MethodSource("webhooks")
     public void endToEndTestSuccess(String webhook, String channelName) throws IOException {
-        checkForNullDB();
+        checkForEmptySlackChannelTable();
         createAndPostSlackChannel(webhook,channelName);
         updateStatusDisabled();
         getOneChannelByStatus();
         getALlChannelsByStatusDisabled_oneChannel();
         getALlChannelsByStatusEnabled_emptyList();
-        deleteAndChackEmptyList();
+        deleteAndCheckEmptyList();
 
     }
 
-    private void deleteAndChackEmptyList() {
+    private void deleteAndCheckEmptyList() {
         Assertions.assertEquals(myClient.delete().getStatusCode(), HttpStatus.OK);
         array.remove(slackChannel);
         Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
@@ -123,7 +123,7 @@ public class EndToEndTest {
 
     }
 
-    private void checkForNullDB() {
+    private void checkForEmptySlackChannelTable() {
         Assertions.assertEquals(myClient.getAllChannels().getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(myClient.getAllChannels().getBody(), array);
     }

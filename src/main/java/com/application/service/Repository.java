@@ -18,5 +18,5 @@ public interface Repository {
 
     List<SlackChannel> getAllChannels();
 
-     SlackChannel updateChannel(UUID uuid,EnumStatus status) throws ChannelNotExitsInDataBaseException;
-    }
+    SlackChannel updateChannel(UUID uuid, EnumStatus status) throws ChannelNotExitsInDataBaseException;
+}
