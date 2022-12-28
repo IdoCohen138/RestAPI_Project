@@ -8,7 +8,6 @@ import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseExcep
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Component("slackcontroller")
@@ -37,9 +36,8 @@ public class SlackChannelController implements Business {
     }
 
     @Override
-    public void updateChannel(UUID id, String status) throws ChannelNotExitsInDataBaseException {
-        SlackChannel modifyChannel = getChannel(id);
-        modifyChannel.setStatus(status);
+    public void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException {
+        SlackChannel modifyChannel=channelRepository.updateChannel(id,status);
         try {
             if (modifyChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
@@ -51,12 +49,10 @@ public class SlackChannelController implements Business {
 
     @Override
     public void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
-        SlackChannel slackChannel=getChannel(id);
-        boolean status=true;
-        if (slackChannel!=null && Objects.equals(slackChannel.getStatus(), "DISABLED")) status=false;
+        SlackChannel slackChannel;
         try {
-            channelRepository.deleteChannel(id);
-            if (!status)
+            slackChannel=channelRepository.deleteChannel(id);
+            if (slackChannel.getStatus()==EnumStatus.DISABLED)
                 return;
             slackIntegration.sendMessage(slackChannel, "Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
@@ -70,7 +66,7 @@ public class SlackChannelController implements Business {
     }
 
     @Override
-    public List<SlackChannel> getChannels(String filter) {
+    public List<SlackChannel> getChannels(EnumStatus filter) {
         return channelRepository.getChannels(filter);
     }
         @Override
@@ -78,15 +74,15 @@ public class SlackChannelController implements Business {
         return channelRepository.getAllChannels();
     }
 
-//    @Scheduled(cron = "0 0 10 * * *")
-//    public void sendPeriodicMessages() {
-//        for (SlackChannel slackChannel: channelRepository.getChannels(EnumStatus.ENABLED)) {
-//            try{
-//                slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities");
-//            }
-//            catch (SlackMessageNotSentException slackMessageNotSentException) {
-//                System.out.println(slackMessageNotSentException.getMessage());
-//            }
-//        }
-//    }
+    @Scheduled(cron = "0 0 10 * * *")
+    public void sendPeriodicMessages() {
+        for (SlackChannel slackChannel: channelRepository.getChannels(EnumStatus.ENABLED)) {
+            try{
+                slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities");
+            }
+            catch (SlackMessageNotSentException slackMessageNotSentException) {
+                System.out.println(slackMessageNotSentException.getMessage());
+            }
+        }
+    }
 }

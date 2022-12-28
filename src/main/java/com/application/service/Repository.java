@@ -10,11 +10,13 @@ public interface Repository {
 
     void createChannel(SlackChannel newChannel) throws ChannelAlreadyExitsInDataBaseException;
 
-    void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException;
+    SlackChannel deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException;
 
     SlackChannel getChannel(UUID uuid) throws ChannelNotExitsInDataBaseException;
 
-    List<SlackChannel> getChannels(String filter);
+    List<SlackChannel> getChannels(EnumStatus filter);
 
     List<SlackChannel> getAllChannels();
-}
+
+     SlackChannel updateChannel(UUID uuid,EnumStatus status) throws ChannelNotExitsInDataBaseException;
+    }

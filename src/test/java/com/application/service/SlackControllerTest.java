@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -56,13 +55,14 @@ public class SlackControllerTest {
 
     @Test
     public void updateChannelTestEnabledSuccess() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
-        Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenReturn(slackChannel);
+        Mockito.when(channelRepository.updateChannel(slackChannel.getId(),EnumStatus.ENABLED)).thenReturn(slackChannel);
         slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
         Mockito.verify(slackIntegration).sendMessage(slackChannel, "Channel's status has been updated");
     }
     @Test
     public void updateChannelTestDisabledSuccess() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
-        Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenReturn(slackChannel);
+        slackChannel.setStatus(EnumStatus.DISABLED);
+        Mockito.when(channelRepository.updateChannel(slackChannel.getId(),EnumStatus.DISABLED)).thenReturn(slackChannel);
         slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.DISABLED);
         Mockito.verify(slackIntegration,Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
     }
@@ -70,7 +70,7 @@ public class SlackControllerTest {
 
     @Test
     public void updateChannelTestFail_null_slack_channel() throws ChannelNotExitsInDataBaseException {
-        Mockito.when(channelRepository.getChannel(slackChannel.getId())).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));
+        Mockito.when(channelRepository.updateChannel(slackChannel.getId(),EnumStatus.ENABLED)).thenThrow(new ChannelNotExitsInDataBaseException("This channel not exits in the database"));
         Assertions.assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
             slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
         });

@@ -64,7 +64,7 @@ public class EndPoints {
     }
 
     @RequestMapping(value = "/channels", params = "status")
-    public @ResponseBody ResponseEntity<?> getChannels(@PathParam("status") @RequestParam String status) {
+    public @ResponseBody ResponseEntity<?> getChannels(@PathParam("status") @RequestParam EnumStatus status) {
         List<SlackChannel> channels = business.getChannels(status);
         return new ResponseEntity<>(channels, HttpStatus.OK);
     }

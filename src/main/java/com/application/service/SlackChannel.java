@@ -6,7 +6,6 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.EnumMap;
 import java.util.UUID;
 
 @Data @Setter @Getter
@@ -27,10 +26,9 @@ public class SlackChannel implements Serializable {
     @EqualsAndHashCode.Exclude @NotNull(message = "The request must contain channel name! (channelName)")
     private String channelName;
     @EqualsAndHashCode.Exclude
-//    @Type(type = "com.application.service.EnumStatus")
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = -1)
-//    @Transient
-    private String status;
+    private EnumStatus status;
 
 
 
