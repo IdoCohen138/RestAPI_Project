@@ -20,9 +20,6 @@ import java.util.Date;
 import java.util.UUID;
 
 @Data
-//@Setter
-//@Getter
-//@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "SlackChannel", schema = "public", catalog = "postgres")
 public class SlackChannel implements Serializable {
@@ -49,11 +46,11 @@ public class SlackChannel implements Serializable {
 
     @Column(name = "created_at", nullable = false, length = -1)
     @CreationTimestamp
-    private LocalDateTime created_at;
+    private Timestamp  created_at;
     @EqualsAndHashCode.Exclude
     @UpdateTimestamp
     @Column(name = "modified_at", nullable = false, length = -1)
-    private LocalDateTime modified_at;
+    private Timestamp modified_at;
 
 
 }

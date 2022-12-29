@@ -30,7 +30,6 @@ public class HibernateUtil {
         properties.setProperty("hibernate.connection.url", connectionUrl);
         properties.setProperty("hibernate.connection.username", userName);
         properties.setProperty("hibernate.connection.password", password);
-        properties.setProperty("hibernate.use_new_id_generator_mappings", "true");
 
         Configuration configuration = new Configuration();
 
