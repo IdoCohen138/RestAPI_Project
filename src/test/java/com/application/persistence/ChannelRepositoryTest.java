@@ -13,11 +13,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,9 +48,9 @@ public class ChannelRepositoryTest {
         assertEquals(0, ChannelRepository.getAllChannels().size());
         assertDoesNotThrow(() -> ChannelRepository.createChannel(slackChannel));
         slackChannels.add(slackChannel);
-        slackChannel.setCreated_at(LocalDateTime.now());
+        slackChannel.setCreated_at(new Timestamp(System.currentTimeMillis()));
         assertEquals(ChannelRepository.getAllChannels(), slackChannels);
-        assertEquals((ChannelRepository.getChannel(slackChannel.getId()).getCreated_at()).toLocalDate(), slackChannel.getCreated_at().toLocalDate());
+        assertEquals((ChannelRepository.getChannel(slackChannel.getId()).getCreated_at()).toLocalDateTime().withNano(0), slackChannel.getCreated_at().toLocalDateTime().withNano(0));
         assertDoesNotThrow(() -> ChannelRepository.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
 
@@ -163,9 +161,10 @@ public class ChannelRepositoryTest {
         assertDoesNotThrow(() -> ChannelRepository.updateChannel(slackChannel.getId(), status1));
         slackChannel.setStatus(status1);
         slackChannels.add(slackChannel);
-        slackChannel.setModified_at(LocalDateTime.now());
+//        Date d=new Date();
+        slackChannel.setModified_at(new Timestamp(System.currentTimeMillis()));
         assertEquals(ChannelRepository.getChannel(slackChannel.getId()).getStatus(), slackChannel.getStatus());
-        assertEquals((ChannelRepository.getChannel(slackChannel.getId()).getModified_at()).toLocalDate(), slackChannel.getModified_at().toLocalDate());
+        assertEquals((ChannelRepository.getChannel(slackChannel.getId()).getModified_at()).toLocalDateTime().withNano(0), slackChannel.getModified_at().toLocalDateTime().withNano(0));
         assertDoesNotThrow(() -> ChannelRepository.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
 
