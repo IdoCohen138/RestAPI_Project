@@ -11,13 +11,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
 public class SlackChannelController implements Business {
+
     SlackRepository channelSlackRepository;
+
     @Autowired
     SlackIntegration slackIntegration;
 
@@ -51,8 +54,9 @@ public class SlackChannelController implements Business {
         SlackChannel modifyChannel;
         try {
             modifyChannel = channelSlackRepository.findById(id).get();
-            channelSlackRepository.updateChannel(id, status);
             modifyChannel.setStatus(status);
+            modifyChannel.setModified_at(new Timestamp(System.currentTimeMillis()));
+            channelSlackRepository.updateChannel(id, status);
         } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
@@ -96,7 +100,6 @@ public class SlackChannelController implements Business {
 
         return slackChannel;
     }
-
 
     @Override
     public List<SlackChannel> getChannels(EnumStatus filter) {
