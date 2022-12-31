@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -69,7 +70,7 @@ public class SlackChannelController implements Business {
             slackChannel=channelSlackRepository.findById(id).get();
             channelSlackRepository.delete(slackChannel);
         }
-        catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e){
+        catch (DataIntegrityViolationException | EntityNotFoundException | NoSuchElementException | InvalidDataAccessApiUsageException e){
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database"); }
 
         if (slackChannel.getStatus() == EnumStatus.DISABLED)

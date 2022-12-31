@@ -45,7 +45,6 @@ public class SlackChannel implements Serializable {
     private EnumStatus status;
 
     @EqualsAndHashCode.Exclude
-
     @Column(name = "created_at", nullable = false, length = -1)
     @CreationTimestamp
     private Timestamp  created_at;
