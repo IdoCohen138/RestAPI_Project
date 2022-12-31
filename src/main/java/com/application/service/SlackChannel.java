@@ -1,13 +1,15 @@
 package com.application.service;
 
-import com.slack.api.model.block.element.RichTextSectionElement;
+//import com.slack.api.model.block.element.RichTextSectionElement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
+//import org.hibernate.annotations.CreationTimestamp;
+//import org.hibernate.annotations.Type;
+//import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,10 +23,10 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "SlackChannel", schema = "public", catalog = "postgres")
+@Table(name = "slackchannel", schema = "public", catalog = "postgres")
 public class SlackChannel implements Serializable {
     @Id
-    @Type(type = "pg-uuid")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, columnDefinition = "uuid", unique = true)
     private UUID id;
     @EqualsAndHashCode.Exclude

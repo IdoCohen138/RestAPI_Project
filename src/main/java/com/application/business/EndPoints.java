@@ -18,13 +18,17 @@ import java.util.UUID;
 
 @RestController
 public class EndPoints {
-    @Autowired
     Business business;
 
+    @Autowired
+    public EndPoints(Business business) {
+        this.business = business;
+    }
+
     @PostMapping("/channels")
-    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel__) {
+    public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel) {
         try {
-            business.createChannel(slackChannel__);
+            business.createChannel(slackChannel);
             return new ResponseEntity<>("The channel has created successful.", HttpStatus.OK);
         } catch (ChannelAlreadyExitsInDataBaseException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
