@@ -43,10 +43,7 @@ public class EndToEndTest {
         properties.load(inputStream);
         String webhook_message_api = properties.getProperty("webhook_message_api");
         String webhook_message_api_2 = properties.getProperty("webhook_message_api_2");
-        return Stream.of(
-                Arguments.of(webhook_message_api, "starship"),
-                Arguments.of(webhook_message_api_2, "starship2")
-        );
+        return Stream.of(Arguments.of(webhook_message_api, "starship"), Arguments.of(webhook_message_api_2, "starship2"));
     }
 
     @SneakyThrows
@@ -57,12 +54,9 @@ public class EndToEndTest {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        array=new ArrayList<SlackChannel>();
-        uriComponentsWithID = UriComponentsBuilder.newInstance()
-                .scheme("http").host("localhost").port(8080).path("channels/{id}").build();
-        uriComponentsWithStatus = UriComponentsBuilder.newInstance()
-                .scheme("http").host("localhost").port(8080)
-                .path("channels/").query("status={status}").build();
+        array = new ArrayList<SlackChannel>();
+        uriComponentsWithID = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/{id}").build();
+        uriComponentsWithStatus = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/").query("status={status}").build();
         myClient = new Client(url.toURI(), headers, restTemplate, uriComponentsWithID.toUri(), uriComponentsWithStatus.toUri());
 
     }
@@ -71,7 +65,7 @@ public class EndToEndTest {
     @MethodSource("webhooks")
     public void endToEndTestSuccess(String webhook, String channelName) throws IOException {
         checkForEmptySlackChannelTable();
-        createAndPostSlackChannel(webhook,channelName);
+        createAndPostSlackChannel(webhook, channelName);
         updateStatusDisabled();
         getOneChannelByStatus();
         getALlChannelsByStatusDisabled_oneChannel();
@@ -102,7 +96,7 @@ public class EndToEndTest {
     }
 
     private void getOneChannelByStatus() {
-      //  Assertions.assertEquals(myClient.getSpecificChannel().getStatusCode(), HttpStatus.OK);
+        //  Assertions.assertEquals(myClient.getSpecificChannel().getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(myClient.getSpecificChannel().getBody().getStatus(), slackChannel.getStatus());
 
     }
@@ -113,7 +107,7 @@ public class EndToEndTest {
         Assertions.assertEquals(myClient.put(requestBodyWithDisabledStatus).getStatusCode(), HttpStatus.OK);
     }
 
-    private void createAndPostSlackChannel(String webhook,String channelName) throws IOException {
+    private void createAndPostSlackChannel(String webhook, String channelName) throws IOException {
         Assertions.assertEquals(myClient.post(jasonByParams(webhook, channelName)).getStatusCode(), HttpStatus.OK);
         UUID channelID = myClient.getIDbyWebhook(webhook);
         myClient.setUrlWithID(uriComponentsWithID.expand(channelID.toString()).toUri());

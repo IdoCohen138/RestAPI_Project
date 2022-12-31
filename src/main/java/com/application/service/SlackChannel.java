@@ -1,24 +1,16 @@
 package com.application.service;
 
 //import com.slack.api.model.block.element.RichTextSectionElement;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-//import org.hibernate.annotations.CreationTimestamp;
-//import org.hibernate.annotations.Type;
-//import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -47,7 +39,7 @@ public class SlackChannel implements Serializable {
     @EqualsAndHashCode.Exclude
     @Column(name = "created_at", nullable = false, length = -1)
     @CreationTimestamp
-    private Timestamp  created_at;
+    private Timestamp created_at;
     @EqualsAndHashCode.Exclude
     @UpdateTimestamp
     @Column(name = "modified_at", nullable = false, length = -1)

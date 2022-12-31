@@ -9,6 +9,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,14 +18,13 @@ import java.util.UUID;
 @Service
 public class SlackChannelController implements Business {
     SlackRepository channelSlackRepository;
+    @Autowired
+    SlackIntegration slackIntegration;
 
     @Autowired
     public SlackChannelController(SlackRepository channelSlackRepository) {
         this.channelSlackRepository = channelSlackRepository;
     }
-
-    @Autowired
-    SlackIntegration slackIntegration;
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
@@ -34,9 +34,9 @@ public class SlackChannelController implements Business {
             slackChannel.setStatus(EnumStatus.ENABLED);
         try {
             channelSlackRepository.save(slackChannel);
+        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e) {
+            throw new ChannelAlreadyExitsInDataBaseException("This channel already exits in database");
         }
-        catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e){
-            throw new  ChannelAlreadyExitsInDataBaseException("This channel already exits in database"); }
         try {
             if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
@@ -50,33 +50,36 @@ public class SlackChannelController implements Business {
     public void updateChannel(UUID id, EnumStatus status) throws ChannelNotExitsInDataBaseException {
         SlackChannel modifyChannel;
         try {
-                modifyChannel=channelSlackRepository.findById(id).get();
-                channelSlackRepository.updateChannel(id, status);
-                modifyChannel.setStatus(status);
-        }catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e){
-                throw new ChannelNotExitsInDataBaseException("This channel not exits in the database"); }
+            modifyChannel = channelSlackRepository.findById(id).get();
+            channelSlackRepository.updateChannel(id, status);
+            modifyChannel.setStatus(status);
+        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e) {
+            throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
+        }
         try {
             if (modifyChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
-                slackIntegration.sendMessage(modifyChannel, "Channel's status has been updated");
+            slackIntegration.sendMessage(modifyChannel, "Channel's status has been updated");
         } catch (SlackMessageNotSentException e) {
-                System.out.println(e.getMessage());
-    }}
+            System.out.println(e.getMessage());
+        }
+    }
 
     @Override
     public void deleteChannel(UUID id) throws ChannelNotExitsInDataBaseException {
         SlackChannel slackChannel;
         try {
-            slackChannel=channelSlackRepository.findById(id).get();
+            slackChannel = channelSlackRepository.findById(id).get();
             channelSlackRepository.delete(slackChannel);
+        } catch (DataIntegrityViolationException | EntityNotFoundException | NoSuchElementException |
+                 InvalidDataAccessApiUsageException e) {
+            throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
-        catch (DataIntegrityViolationException | EntityNotFoundException | NoSuchElementException | InvalidDataAccessApiUsageException e){
-            throw new ChannelNotExitsInDataBaseException("This channel not exits in the database"); }
 
         if (slackChannel.getStatus() == EnumStatus.DISABLED)
-                return;
+            return;
         try {
-        slackIntegration.sendMessage(slackChannel, "Channel has been deleted");
+            slackIntegration.sendMessage(slackChannel, "Channel has been deleted");
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -86,19 +89,21 @@ public class SlackChannelController implements Business {
     public SlackChannel getChannel(UUID id) throws ChannelNotExitsInDataBaseException {
         SlackChannel slackChannel;
         try {
-            slackChannel=channelSlackRepository.findById(id).get();
-        }catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e){
+            slackChannel = channelSlackRepository.findById(id).get();
+        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
 
-        return slackChannel;}
+        return slackChannel;
+    }
 
 
     @Override
     public List<SlackChannel> getChannels(EnumStatus filter) {
         Specification<SlackChannel> spec = (root, query, builder) ->
                 builder.equal(root.get("status"), filter);
-        return channelSlackRepository.findAll(spec);}
+        return channelSlackRepository.findAll(spec);
+    }
 
     @Override
     public List<SlackChannel> getAllChannels() {

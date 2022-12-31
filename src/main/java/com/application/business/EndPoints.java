@@ -2,12 +2,11 @@ package com.application.business;
 
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
+import com.application.service.Business;
 import com.application.service.EnumStatus;
 import com.application.service.SlackChannel;
-import com.application.service.Business;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
