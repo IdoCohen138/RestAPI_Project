@@ -1,9 +1,6 @@
 package com.application.service;
 
-import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
-import com.application.service.EnumStatus;
-import com.application.service.SlackChannel;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface SlackRepository extends JpaRepository<SlackChannel, UUID> {
+public interface SlackRepository extends JpaRepository<SlackChannel, UUID>{
 
     @Transactional
     @Modifying
@@ -24,5 +21,4 @@ public interface SlackRepository extends JpaRepository<SlackChannel, UUID> {
     void updateChannel(@Param("id") UUID id, @Param("status") EnumStatus status) throws ChannelNotExitsInDataBaseException;
 
     List<SlackChannel> findAll(Specification<SlackChannel> spec);
-
 }

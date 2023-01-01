@@ -73,7 +73,7 @@ public class EndPoints {
     }
 
     @GetMapping(value = "/channels")
-    public @ResponseBody ResponseEntity<?> getChannels() {
+    public @ResponseBody ResponseEntity<List<SlackChannel>> getChannels() {
         List<SlackChannel> channels = business.getAllChannels();
         return new ResponseEntity<>(channels, HttpStatus.OK);
     }

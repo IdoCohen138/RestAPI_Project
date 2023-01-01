@@ -3,6 +3,8 @@
 //import com.application.persistence.ChannelRepository;
 //import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 //import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
+//import com.application.persistence.exceptions.exceptions.ChannelAlreadyExitsInDataBaseException;
+//import com.application.persistence.exceptions.exceptions.ChannelNotExitsInDataBaseException;
 //import com.application.service.exceptions.SlackMessageNotSentException;
 //import org.junit.Before;
 //import org.junit.jupiter.api.Assertions;
@@ -26,9 +28,8 @@
 //    @Resource
 //    SlackChannelController slackChannelController;
 //
-//
-//    @Mock
-//    ChannelRepository channelRepository;
+////    @Mock
+////    ChannelRepository channelRepository;
 //    @Mock
 //    SlackIntegration slackIntegration;
 //
@@ -43,14 +44,13 @@
 //        MockitoAnnotations.openMocks(this);
 //        slackChannels = new ArrayList<>();
 //        slackChannels.add(slackChannel);
-//
 //    }
+//
 //    @Test
 //    public void createChannelTestSuccess() throws ChannelAlreadyExitsInDataBaseException, SlackMessageNotSentException {
 //        slackChannelController.createChannel(slackChannel);
 //        Mockito.verify(channelRepository).createChannel(slackChannel);
 //        Mockito.verify(slackIntegration).sendMessage(slackChannel, "New channel has been created");
-//
 //    }
 //
 //    @Test

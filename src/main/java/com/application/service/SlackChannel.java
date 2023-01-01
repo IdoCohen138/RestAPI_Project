@@ -1,7 +1,7 @@
 package com.application.service;
 
-//import com.slack.api.model.block.element.RichTextSectionElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,12 +11,20 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "slackchannel", schema = "public", catalog = "postgres")
-public class SlackChannel implements Serializable {
+public class SlackChannel implements Serializable{
+
+    @OneToMany(mappedBy = "slackChannel", cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    private Set<LogMessages> logMessages = new HashSet<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, columnDefinition = "uuid", unique = true)
