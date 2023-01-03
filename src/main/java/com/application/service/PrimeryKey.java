@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-@Embeddable @Data
+@Embeddable
+@Data
 public class PrimeryKey implements Serializable {
     private UUID id;
     private String message;

@@ -14,7 +14,6 @@ import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -25,6 +24,7 @@ public class SlackChannelController implements Business {
     MessageRepository messageRepository;
     @Autowired
     SlackIntegration slackIntegration;
+
     @Autowired
     public SlackChannelController(SlackRepository channelSlackRepository, MessageRepository messageRepository) {
         this.channelSlackRepository = channelSlackRepository;
@@ -39,7 +39,8 @@ public class SlackChannelController implements Business {
             slackChannel.setStatus(EnumStatus.ENABLED);
         try {
             channelSlackRepository.save(slackChannel);
-        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException | NoSuchElementException e) {
+        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException |
+                 NoSuchElementException e) {
             throw new ChannelAlreadyExitsInDataBaseException("This channel already exits in database");
         }
         try {
@@ -61,7 +62,8 @@ public class SlackChannelController implements Business {
             modifyChannel.setStatus(status);
             modifyChannel.setModified_at(new Timestamp(System.currentTimeMillis()));
             channelSlackRepository.updateChannel(id, status);
-        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException | NoSuchElementException e) {
+        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException |
+                 NoSuchElementException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
         try {
@@ -102,7 +104,8 @@ public class SlackChannelController implements Business {
         SlackChannel slackChannel;
         try {
             slackChannel = channelSlackRepository.findById(id).get();
-        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException | NoSuchElementException e) {
+        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException |
+                 NoSuchElementException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
 

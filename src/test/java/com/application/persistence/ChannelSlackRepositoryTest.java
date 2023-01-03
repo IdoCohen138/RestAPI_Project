@@ -2,7 +2,6 @@ package com.application.persistence;
 
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.EnumStatus;
-import com.application.service.MessageRepository;
 import com.application.service.SlackChannel;
 import com.application.service.SlackRepository;
 import org.junit.jupiter.api.BeforeEach;

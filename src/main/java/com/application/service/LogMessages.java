@@ -46,6 +46,7 @@ public class LogMessages implements Serializable {
         this.slackChannel = slackChannel;
     }
 
-    public LogMessages() { }
+    public LogMessages() {
+    }
 
 }

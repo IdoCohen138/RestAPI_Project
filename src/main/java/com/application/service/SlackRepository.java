@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface SlackRepository extends JpaRepository<SlackChannel, UUID>{
+public interface SlackRepository extends JpaRepository<SlackChannel, UUID> {
 
     @Transactional
     @Modifying

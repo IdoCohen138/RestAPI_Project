@@ -3,7 +3,6 @@ package com.application.service;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.exceptions.SlackMessageNotSentException;
-import org.hibernate.mapping.Any;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +60,7 @@ public class SlackControllerTest {
         Mockito.verify(channelRepository, times(1)).save(slackChannel);
         Mockito.verify(slackIntegration).sendMessage(slackChannel, "New channel has been created");
     }
+
     @Test
     void CreateChannelTest_channelAlreadyExits() {
         Mockito.when(channelRepository.save(slackChannel)).thenThrow(DataIntegrityViolationException.class);
@@ -73,25 +73,26 @@ public class SlackControllerTest {
     @Test
     public void updateChannelTestEnabledSuccess() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
-        slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
-        Mockito.verify(channelRepository).updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
+        slackChannelController.updateChannel(slackChannel.getId(), EnumStatus.ENABLED);
+        Mockito.verify(channelRepository).updateChannel(slackChannel.getId(), EnumStatus.ENABLED);
         Mockito.verify(slackIntegration).sendMessage(slackChannel, "Channel's status has been updated");
     }
+
     @Test
     public void updateChannelTestDisabledSuccess() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
         slackChannel.setStatus(EnumStatus.DISABLED);
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
-        slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.DISABLED);
-        Mockito.verify(channelRepository).updateChannel(slackChannel.getId(),EnumStatus.DISABLED);
-        Mockito.verify(slackIntegration,Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
+        slackChannelController.updateChannel(slackChannel.getId(), EnumStatus.DISABLED);
+        Mockito.verify(channelRepository).updateChannel(slackChannel.getId(), EnumStatus.DISABLED);
+        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
     }
 
 
     @Test
-    public void updateChannelTestFail_null_slack_channel()  {
+    public void updateChannelTestFail_null_slack_channel() {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenThrow(new NoSuchElementException());
         Assertions.assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
-            slackChannelController.updateChannel(slackChannel.getId(),EnumStatus.ENABLED);
+            slackChannelController.updateChannel(slackChannel.getId(), EnumStatus.ENABLED);
         });
     }
 
@@ -103,20 +104,22 @@ public class SlackControllerTest {
         Mockito.verify(slackIntegration).sendMessage(slackChannel, "Channel has been deleted");
 
     }
+
     @Test
     public void deleteChannelTestDisableSuccess() throws SlackMessageNotSentException, ChannelNotExitsInDataBaseException {
         slackChannel.setStatus(EnumStatus.DISABLED);
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
         slackChannelController.deleteChannel(slackChannel.getId());
         Mockito.verify(channelRepository).delete(slackChannel);
-        Mockito.verify(slackIntegration,Mockito.never()).sendMessage(slackChannel, "Channel has been deleted");
+        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "Channel has been deleted");
     }
 
     @Test
-    public void deleteChannelTestFail_null_slack_channel()   {
+    public void deleteChannelTestFail_null_slack_channel() {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenThrow(new NoSuchElementException());
         Assertions.assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
-            slackChannelController.deleteChannel(slackChannel.getId()); });
+            slackChannelController.deleteChannel(slackChannel.getId());
+        });
     }
 
 

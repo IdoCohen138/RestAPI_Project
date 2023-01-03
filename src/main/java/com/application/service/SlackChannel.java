@@ -18,7 +18,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "slackchannel", schema = "public", catalog = "postgres")
-public class SlackChannel implements Serializable{
+public class SlackChannel implements Serializable {
 
     @OneToMany(mappedBy = "slackChannel", cascade = CascadeType.PERSIST)
     @JsonIgnore
