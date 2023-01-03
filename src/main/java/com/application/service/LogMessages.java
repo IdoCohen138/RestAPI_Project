@@ -22,7 +22,7 @@ public class LogMessages implements Serializable {
 
     @EmbeddedId
     @Column(name = "logmessages_slackchannel")
-    private PrimeryKey id;
+    private LogMessagePrimaryKey id;
 
     @Column(name = "id", nullable = false, columnDefinition = "uuid", insertable = false, updatable = false)
     private UUID uuid;
@@ -36,7 +36,7 @@ public class LogMessages implements Serializable {
     private Timestamp time;
 
     public LogMessages(UUID uuid, String message, Timestamp timestamp, SlackChannel slackChannel) {
-        this.id = new PrimeryKey();
+        this.id = new LogMessagePrimaryKey();
         this.id.setId(uuid);
         this.id.setMessage(message);
         this.id.setTime(timestamp);

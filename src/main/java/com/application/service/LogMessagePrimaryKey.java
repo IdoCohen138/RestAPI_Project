@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Embeddable
 @Data
-public class PrimeryKey implements Serializable {
+public class LogMessagePrimaryKey implements Serializable {
     private UUID id;
     private String message;
     private Timestamp time;

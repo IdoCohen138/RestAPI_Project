@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.application.job.SlackIntegration;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.exceptions.SlackMessageNotSentException;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -18,18 +18,10 @@ import java.util.UUID;
 
 @Service
 public class SlackChannelController implements Business {
-
-    LogMessages logMessages;
-    SlackRepository channelSlackRepository;
-    MessageRepository messageRepository;
+    @Autowired
+   SlackRepository channelSlackRepository;
     @Autowired
     SlackIntegration slackIntegration;
-
-    @Autowired
-    public SlackChannelController(SlackRepository channelSlackRepository, MessageRepository messageRepository) {
-        this.channelSlackRepository = channelSlackRepository;
-        this.messageRepository = messageRepository;
-    }
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
@@ -48,7 +40,7 @@ public class SlackChannelController implements Business {
                 return;
             String message = "New channel has been created";
             slackIntegration.sendMessage(slackChannel, message);
-            addLogMessage(message, slackChannel);
+     //       addLogMessage(message, slackChannel);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -71,7 +63,7 @@ public class SlackChannelController implements Business {
                 return;
             String message = "Channel's status has been updated";
             slackIntegration.sendMessage(modifyChannel, message);
-            addLogMessage(message, modifyChannel);
+         //   addLogMessage(message, modifyChannel);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -124,21 +116,7 @@ public class SlackChannelController implements Business {
         return channelSlackRepository.findAll();
     }
 
-    @Scheduled(cron = "0 0 10 * * *")
-    public void sendPeriodicMessages() {
-        for (SlackChannel slackChannel : getChannels(EnumStatus.ENABLED)) {
-            try {
-                String message = "You have no vulnerabilities";
-                slackIntegration.sendMessage(slackChannel, message);
-                addLogMessage(message, slackChannel);
-            } catch (SlackMessageNotSentException slackMessageNotSentException) {
-                System.out.println(slackMessageNotSentException.getMessage());
-            }
-        }
-    }
 
-    private void addLogMessage(String message, SlackChannel slackChannel) {
-        logMessages = new LogMessages(slackChannel.getId(), message, new Timestamp(System.currentTimeMillis()), slackChannel);
-        messageRepository.save(logMessages);
-    }
+
+
 }

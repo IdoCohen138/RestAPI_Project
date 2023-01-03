@@ -1,5 +1,6 @@
 package com.application.service;
 
+import com.application.job.SlackIntegration;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.exceptions.SlackMessageNotSentException;
@@ -14,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.domain.Specification;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -123,23 +123,7 @@ public class SlackControllerTest {
     }
 
 
-    @Test
-    public void sendPeriodicMessagesTestSuccess() throws SlackMessageNotSentException {
-        Mockito.when(channelRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
-        slackChannelController.sendPeriodicMessages();
-        Mockito.verify(slackIntegration).sendMessage(slackChannel, "You have no vulnerabilities");
 
-    }
-
-    @Test
-    public void sendPeriodicMessagesTestFail() throws SlackMessageNotSentException {
-        Mockito.when(channelRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
-        SlackMessageNotSentException exception = new SlackMessageNotSentException("Message didn't send to slack");
-        Mockito.when(slackIntegration.sendMessage(slackChannel, "You have no vulnerabilities")).thenThrow(exception);
-        slackChannelController.sendPeriodicMessages();
-        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "This channel not exits in the database");
-
-    }
 
 
 }

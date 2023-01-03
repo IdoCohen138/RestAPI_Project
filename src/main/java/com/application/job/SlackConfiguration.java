@@ -1,4 +1,4 @@
-package com.application.service;
+package com.application.job;
 
 import com.slack.api.Slack;
 import org.springframework.context.annotation.Bean;
