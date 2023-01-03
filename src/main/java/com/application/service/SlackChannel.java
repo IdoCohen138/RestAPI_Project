@@ -32,25 +32,25 @@ public class SlackChannel implements Serializable {
     @EqualsAndHashCode.Exclude
     @NotNull(message = "The request must contain webhook! (webhook)")
     @Basic
-    @Column(name = "webhook", nullable = false, length = -1, unique = true)
+    @Column(name = "webhook", nullable = false, unique = true)
     private String webhook;
     @Basic
-    @Column(name = "channelname", nullable = false, length = -1)
+    @Column(name = "channelname", nullable = false)
     @EqualsAndHashCode.Exclude
     @NotNull(message = "The request must contain channel name! (channelName)")
     private String channelName;
     @EqualsAndHashCode.Exclude
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = -1)
+    @Column(name = "status")
     private EnumStatus status;
 
     @EqualsAndHashCode.Exclude
-    @Column(name = "created_at", nullable = false, length = -1)
+    @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp created_at;
     @EqualsAndHashCode.Exclude
     @UpdateTimestamp
-    @Column(name = "modified_at", nullable = false, length = -1)
+    @Column(name = "modified_at", nullable = false)
     private Timestamp modified_at;
 
 
