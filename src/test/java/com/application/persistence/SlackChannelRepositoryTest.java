@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ChannelSlackRepositoryTest {
+public class SlackChannelRepositoryTest {
     SlackChannel slackChannel;
 
     @Autowired

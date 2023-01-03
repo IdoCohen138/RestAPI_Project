@@ -17,12 +17,9 @@ import java.util.UUID;
 
 @RestController
 public class EndPoints {
+    @Autowired
     Business business;
 
-    @Autowired
-    public EndPoints(Business business) {
-        this.business = business;
-    }
 
     @PostMapping("/channels")
     public ResponseEntity<String> createChannel(@Valid @RequestBody SlackChannel slackChannel) {
