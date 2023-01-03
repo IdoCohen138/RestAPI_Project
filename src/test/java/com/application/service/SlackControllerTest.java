@@ -62,7 +62,7 @@ public class SlackControllerTest {
     }
 
     @Test
-    void CreateChannelTest_channelAlreadyExits() {
+    void CreateChannelTest_channelAlreadyExits_throws_already_exists_exception() {
         Mockito.when(channelRepository.save(slackChannel)).thenThrow(DataIntegrityViolationException.class);
         Assertions.assertThrows(ChannelAlreadyExitsInDataBaseException.class, () -> {
             slackChannelController.createChannel(slackChannel);

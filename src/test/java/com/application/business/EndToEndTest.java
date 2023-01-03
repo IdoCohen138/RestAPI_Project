@@ -68,7 +68,7 @@ public class EndToEndTest {
         createAndPostSlackChannel(webhook, channelName);
         updateStatusDisabled();
         getOneChannelByStatus();
-        getALlChannelsByStatusDisabled_oneChannel();
+        getALlChannelsByStatusDisabled_returns_one_channel();
         getALlChannelsByStatusEnabled_returns_empty_list();
         deleteAndCheckEmptyList();
 
@@ -88,7 +88,7 @@ public class EndToEndTest {
     }
 
 
-    private void getALlChannelsByStatusDisabled_oneChannel() {
+    private void getALlChannelsByStatusDisabled_returns_one_channel() {
         myClient.setUrlWithStatus(uriComponentsWithStatus.expand(EnumStatus.DISABLED.toString()).toUri());
         Assertions.assertEquals(myClient.getAllChannelsWithStatus().getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(myClient.getAllChannelsWithStatus().getBody(), array);
