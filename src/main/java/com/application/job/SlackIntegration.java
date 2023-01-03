@@ -55,7 +55,9 @@ public class SlackIntegration {
 
     private void addLogMessage(String message, SlackChannel slackChannel) {
         LogMessages logMessages;
-        logMessages = new LogMessages(slackChannel.getId(), message, new Timestamp(System.currentTimeMillis()), slackChannel);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LogMessagePrimaryKey logMessagePrimaryKey = new LogMessagePrimaryKey(slackChannel.getId(), message, timestamp);
+        logMessages = new LogMessages(slackChannel, logMessagePrimaryKey, slackChannel.getId(), message, timestamp);
         messageRepository.save(logMessages);
     }
 

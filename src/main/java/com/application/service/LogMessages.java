@@ -3,13 +3,17 @@ package com.application.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "logmessages", schema = "public", catalog = "postgres")
@@ -35,18 +39,5 @@ public class LogMessages implements Serializable {
     @CreationTimestamp
     private Timestamp time;
 
-    public LogMessages(UUID uuid, String message, Timestamp timestamp, SlackChannel slackChannel) {
-        this.id = new LogMessagePrimaryKey();
-        this.id.setId(uuid);
-        this.id.setMessage(message);
-        this.id.setTime(timestamp);
-        this.uuid = uuid;
-        this.message = message;
-        this.time = timestamp;
-        this.slackChannel = slackChannel;
-    }
-
-    public LogMessages() {
-    }
 
 }

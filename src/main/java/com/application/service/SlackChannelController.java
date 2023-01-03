@@ -109,8 +109,4 @@ public class SlackChannelController implements Business {
     public List<SlackChannel> getAllChannels() {
         return channelSlackRepository.findAll();
     }
-
-
-
-
 }
