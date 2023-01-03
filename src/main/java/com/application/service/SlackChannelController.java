@@ -31,8 +31,7 @@ public class SlackChannelController implements Business {
             slackChannel.setStatus(EnumStatus.ENABLED);
         try {
             channelSlackRepository.save(slackChannel);
-        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException |
-                 NoSuchElementException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new ChannelAlreadyExitsInDataBaseException("This channel already exits in database");
         }
         try {
@@ -40,7 +39,6 @@ public class SlackChannelController implements Business {
                 return;
             String message = "New channel has been created";
             slackIntegration.sendMessage(slackChannel, message);
-     //       addLogMessage(message, slackChannel);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -54,8 +52,7 @@ public class SlackChannelController implements Business {
             modifyChannel.setStatus(status);
             modifyChannel.setModified_at(new Timestamp(System.currentTimeMillis()));
             channelSlackRepository.updateChannel(id, status);
-        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException |
-                 NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
         try {
@@ -63,7 +60,6 @@ public class SlackChannelController implements Business {
                 return;
             String message = "Channel's status has been updated";
             slackIntegration.sendMessage(modifyChannel, message);
-         //   addLogMessage(message, modifyChannel);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -76,8 +72,7 @@ public class SlackChannelController implements Business {
             slackChannel = channelSlackRepository.findById(id).get();
             slackChannel.getLogMessages().clear();
             channelSlackRepository.delete(slackChannel);
-        } catch (DataIntegrityViolationException | EntityNotFoundException | NoSuchElementException |
-                 InvalidDataAccessApiUsageException e) {
+        } catch (NoSuchElementException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
 
@@ -96,8 +91,7 @@ public class SlackChannelController implements Business {
         SlackChannel slackChannel;
         try {
             slackChannel = channelSlackRepository.findById(id).get();
-        } catch (DataIntegrityViolationException | EntityNotFoundException | InvalidDataAccessApiUsageException |
-                 NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
         }
 
