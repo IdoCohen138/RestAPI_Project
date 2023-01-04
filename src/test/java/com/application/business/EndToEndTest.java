@@ -18,10 +18,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -49,6 +52,7 @@ public class EndToEndTest {
     @SneakyThrows
     @BeforeEach
     public void setup() {
+        runDockerComposeUp();
         restTemplate = new RestTemplate();
         url = new URL("http://localhost:8080/channels");
         headers = new HttpHeaders();
@@ -59,6 +63,26 @@ public class EndToEndTest {
         uriComponentsWithStatus = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/").query("status={status}").build();
         myClient = new Client(url.toURI(), headers, restTemplate, uriComponentsWithID.toUri(), uriComponentsWithStatus.toUri());
 
+    }
+    public static void runDockerComposeUp() {
+        // command to run
+        String command = "docker-compose up";
+
+        try {
+            // execute the command
+            Process process = Runtime.getRuntime().exec(command);
+
+            // get the input stream and read the output
+            InputStream inputStream = process.getInputStream();
+            String output = new BufferedReader(new InputStreamReader(inputStream))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
+
+            // print the output
+            System.out.println(output);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @ParameterizedTest
