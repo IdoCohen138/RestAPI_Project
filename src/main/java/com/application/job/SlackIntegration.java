@@ -21,8 +21,6 @@ public class SlackIntegration {
 
     @Autowired
     SlackRepository slackRepository;
-
-
     @Autowired
     Slack slack;
 

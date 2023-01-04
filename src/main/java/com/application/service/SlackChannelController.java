@@ -25,10 +25,6 @@ public class SlackChannelController implements Business {
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
-        if (slackChannel.getStatus() != null && slackChannel.getStatus().equals(EnumStatus.DISABLED))
-            slackChannel.setStatus(EnumStatus.DISABLED);
-        else
-            slackChannel.setStatus(EnumStatus.ENABLED);
         try {
             channelSlackRepository.save(slackChannel);
         } catch (DataIntegrityViolationException e) {

@@ -65,7 +65,7 @@ public class SlackIntegrationTest {
 
 
     @Test
-    public void sendPeriodicMessagesTestSuccess() throws SlackMessageNotSentException {
+    public void sendPeriodicMessagesTestSuccess()  {
         Mockito.when(slackRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
         slackIntegration.sendPeriodicMessages();
         Mockito.verify(messageRepository).save(any() );

@@ -33,9 +33,6 @@ public class SlackControllerTest {
     SlackChannelController slackChannelController;
 
     @Mock
-    MessageRepository messageRepository;
-
-    @Mock
     SlackRepository channelRepository;
     @Mock
     SlackIntegration slackIntegration;

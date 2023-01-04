@@ -41,7 +41,7 @@ public class SlackChannel implements Serializable {
     private String channelName;
     @EqualsAndHashCode.Exclude
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status" )
     private EnumStatus status;
 
     @EqualsAndHashCode.Exclude
@@ -53,5 +53,9 @@ public class SlackChannel implements Serializable {
     @Column(name = "modified_at", nullable = false)
     private Timestamp modified_at;
 
-
+    @PrePersist
+    void prePersist() {
+        if (this.status == null)
+            this.status = EnumStatus.ENABLED;
+    }
 }

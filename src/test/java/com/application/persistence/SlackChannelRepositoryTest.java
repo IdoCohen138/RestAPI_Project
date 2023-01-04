@@ -49,7 +49,7 @@ public class SlackChannelRepositoryTest {
     }
 
     @Test
-    void createChannelTestSuccess() throws ChannelNotExitsInDataBaseException {
+    void createChannelTestSuccess()  {
         assertEquals(0, channelSlackRepository.findAll().size());
         assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
         slackChannels.add(slackChannel);
@@ -61,7 +61,7 @@ public class SlackChannelRepositoryTest {
     }
 
     @Test
-    void CreateChannelAlreadyExistFail() throws InterruptedException, IOException {
+    void CreateChannelAlreadyExistFail() throws  IOException {
         assertDoesNotThrow(() -> channelSlackRepository.saveAndFlush(slackChannel));
         SlackChannel duplicate = createSlackChannel();
         assertThrows(DataIntegrityViolationException.class, () -> channelSlackRepository.saveAndFlush(duplicate));
