@@ -16,8 +16,11 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -29,58 +32,66 @@ public class SlackIntegrationTest {
     SlackIntegration slackIntegration;
 
     @Mock
-    Slack slack;
-    @Mock
     MessageRepository messageRepository;
     @Mock
     SlackRepository slackRepository;
+
+    @Mock
+    MessageSender messageSender;
+
     SlackChannel slackChannel;
     List<SlackChannel> slackChannels;
 
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException {
         MockitoAnnotations.openMocks(this);
-        set_slackChannel_properties();
+        slackChannel=createSlackChannel();
         slackChannels = new ArrayList<>();
         slackChannels.add(slackChannel);
 
     }
 
 
-    @Test
-    public void sendMessageTestSuccess() throws SlackMessageNotSentException, IOException {
-
-        slackIntegration.sendMessage(slackChannel, "SOME_MESSAGE");
-        Payload payload = Payload.builder().text("SOME_MESSAGE").build();
-
-        Mockito.verify(slack).send(slackChannel.getWebhook(), payload);
-
-    }
-
-    private void set_slackChannel_properties() {
-        slackChannel = new SlackChannel();
-        slackChannel.setWebhook("SOME_WEBHOOK");
-    }
-
 
     @Test
-    public void sendPeriodicMessagesTestSuccess()  {
+    public void sendPeriodicMessagesTestSuccess() throws SlackMessageNotSentException {
         Mockito.when(slackRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
+//        Mockito.when(messageSender.sendMessage(slackChannel,"You have no vulnerabilities")).th;
+
         slackIntegration.sendPeriodicMessages();
         Mockito.verify(messageRepository).save(any() );
 
     }
 
     @Test
-    public void sendPeriodicMessagesTestFail() throws  IOException {
+    public void sendPeriodicMessagesTestFail() throws  SlackMessageNotSentException {
         Mockito.when(slackRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
-        Payload payload = Payload.builder().text("You have no vulnerabilities").build();
-        IOException exception = new IOException();
-        Mockito.when(slack.send(slackChannel.getWebhook(),payload)).thenThrow(exception);
+        SlackMessageNotSentException exception = new SlackMessageNotSentException("Message didn't send to slack");
+        Mockito.when(messageSender.sendMessage(slackChannel,"You have no vulnerabilities")).thenThrow(exception);
         slackIntegration.sendPeriodicMessages();
         Mockito.verify(messageRepository,Mockito.never()).save(any() );
 
+    }
+
+
+    private SlackChannel createSlackChannel() throws IOException {
+        SlackChannel slackChannel;
+        slackChannel = new SlackChannel();
+        String webhook = readFromProperties();
+        slackChannel.setWebhook(webhook);
+        slackChannel.setChannelName("test");
+        slackChannel.setStatus(EnumStatus.ENABLED);
+        slackChannel.setLogMessages(new HashSet<>());
+        return slackChannel;
+
+    }
+
+    private String readFromProperties() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        return properties.getProperty("webhook_message_api");
     }
 
 }

@@ -33,9 +33,10 @@ public class SlackControllerTest {
     SlackChannelController slackChannelController;
 
     @Mock
-    SlackRepository channelRepository;
+    MessageSender messageSender;
+
     @Mock
-    SlackIntegration slackIntegration;
+    SlackRepository channelRepository;
 
     SlackChannel slackChannel;
     List<SlackChannel> slackChannels;
@@ -55,7 +56,7 @@ public class SlackControllerTest {
         Mockito.when(channelRepository.save(slackChannel)).thenReturn(slackChannel);
         slackChannelController.createChannel(slackChannel);
         Mockito.verify(channelRepository, times(1)).save(slackChannel);
-        Mockito.verify(slackIntegration).sendMessage(slackChannel, "New channel has been created");
+        Mockito.verify(messageSender).sendMessage(slackChannel, "New channel has been created");
     }
 
     @Test
@@ -72,7 +73,7 @@ public class SlackControllerTest {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
         slackChannelController.updateChannel(slackChannel.getId(), EnumStatus.ENABLED);
         Mockito.verify(channelRepository).updateChannel(slackChannel.getId(), EnumStatus.ENABLED);
-        Mockito.verify(slackIntegration).sendMessage(slackChannel, "Channel's status has been updated");
+        Mockito.verify(messageSender).sendMessage(slackChannel, "Channel's status has been updated");
     }
 
     @Test
@@ -81,7 +82,7 @@ public class SlackControllerTest {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
         slackChannelController.updateChannel(slackChannel.getId(), EnumStatus.DISABLED);
         Mockito.verify(channelRepository).updateChannel(slackChannel.getId(), EnumStatus.DISABLED);
-        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
+        Mockito.verify(messageSender, Mockito.never()).sendMessage(slackChannel, "Channel's status has been updated");
     }
 
 
@@ -98,7 +99,7 @@ public class SlackControllerTest {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
         slackChannelController.deleteChannel(slackChannel.getId());
         Mockito.verify(channelRepository).delete(slackChannel);
-        Mockito.verify(slackIntegration).sendMessage(slackChannel, "Channel has been deleted");
+        Mockito.verify(messageSender).sendMessage(slackChannel, "Channel has been deleted");
 
     }
 
@@ -108,7 +109,7 @@ public class SlackControllerTest {
         Mockito.when(channelRepository.findById(slackChannel.getId())).thenReturn(Optional.of(slackChannel));
         slackChannelController.deleteChannel(slackChannel.getId());
         Mockito.verify(channelRepository).delete(slackChannel);
-        Mockito.verify(slackIntegration, Mockito.never()).sendMessage(slackChannel, "Channel has been deleted");
+        Mockito.verify(messageSender, Mockito.never()).sendMessage(slackChannel, "Channel has been deleted");
     }
 
     @Test

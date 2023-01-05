@@ -34,7 +34,7 @@ public class EndPoints {
     @PutMapping(value = "/channels/{id}")
     public ResponseEntity<String> updateChannel(@PathVariable UUID id, @RequestBody SlackChannel status) {
         try {
-            if (status.getStatus() == null)
+            if (status.getStatus() == null )
                 return new ResponseEntity<>("Required status in this format ENABLED or DISABLED", HttpStatus.OK);
             business.updateChannel(id, status.getStatus());
             return new ResponseEntity<>("The channel status has been modify successful.", HttpStatus.OK);

@@ -1,16 +1,13 @@
 package com.application.service;
 
-import com.application.job.SlackIntegration;
 import com.application.persistence.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.application.persistence.exceptions.ChannelNotExitsInDataBaseException;
 import com.application.service.exceptions.SlackMessageNotSentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -19,9 +16,9 @@ import java.util.UUID;
 @Service
 public class SlackChannelController implements Business {
     @Autowired
-   SlackRepository channelSlackRepository;
+    MessageSender messageSender;
     @Autowired
-    SlackIntegration slackIntegration;
+    SlackRepository channelSlackRepository;
 
     @Override
     public void createChannel(SlackChannel slackChannel) throws ChannelAlreadyExitsInDataBaseException {
@@ -34,7 +31,7 @@ public class SlackChannelController implements Business {
             if (slackChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
             String message = "New channel has been created";
-            slackIntegration.sendMessage(slackChannel, message);
+            messageSender.sendMessage(slackChannel, message);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -55,7 +52,7 @@ public class SlackChannelController implements Business {
             if (modifyChannel.getStatus().equals(EnumStatus.DISABLED))
                 return;
             String message = "Channel's status has been updated";
-            slackIntegration.sendMessage(modifyChannel, message);
+            messageSender.sendMessage(modifyChannel, message);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }
@@ -76,7 +73,7 @@ public class SlackChannelController implements Business {
             return;
         try {
             String message = "Channel has been deleted";
-            slackIntegration.sendMessage(slackChannel, message);
+            messageSender.sendMessage(slackChannel, message);
         } catch (SlackMessageNotSentException e) {
             System.out.println(e.getMessage());
         }

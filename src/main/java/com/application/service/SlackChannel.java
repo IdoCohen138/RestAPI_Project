@@ -41,7 +41,7 @@ public class SlackChannel implements Serializable {
     private String channelName;
     @EqualsAndHashCode.Exclude
     @Enumerated(EnumType.STRING)
-    @Column(name = "status" )
+    @Column(name = "status")
     private EnumStatus status;
 
     @EqualsAndHashCode.Exclude
@@ -58,4 +58,6 @@ public class SlackChannel implements Serializable {
         if (this.status == null)
             this.status = EnumStatus.ENABLED;
     }
+
 }
+
