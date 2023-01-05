@@ -14,7 +14,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: idoco138/database-5433
+    image: idoco138/database
     env_file:
       - .env
     environment:
