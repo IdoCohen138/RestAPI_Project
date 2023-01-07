@@ -18,7 +18,7 @@
 	</properties>
 	<packaging>pom</packaging>
 	<modules>
-<!--		<module>business</module>-->
+<!--		<module>com.business</module>-->
 		<module>job</module>
 		<module>persistence</module>
 		<module>service</module>
