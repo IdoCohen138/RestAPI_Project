@@ -18,10 +18,10 @@
 	</properties>
 	<packaging>pom</packaging>
 	<modules>
-		<module>business</module>
-<!--		<module>job</module>-->
 		<module>persistence</module>
+<!--		<module>job</module>-->
 		<module>service</module>
+		<module>business</module>
 	</modules>
 	<dependencies>
 		<dependency>
@@ -58,7 +58,6 @@
 		</dependency>
 
 	</dependencies>
-
 
 </project>
 
