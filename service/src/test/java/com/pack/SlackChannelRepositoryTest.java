@@ -30,8 +30,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@EntityScan(basePackages = {"com"})
-@ComponentScan(basePackages = {"com"})
+@EntityScan(basePackages = {"com.pack"})
+@ComponentScan(basePackages = {"com.pack"})
 @EnableAutoConfiguration
 @SpringBootConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class})
