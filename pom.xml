@@ -16,13 +16,13 @@
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
-	<packaging>pom</packaging>
 	<modules>
 		<module>persistence</module>
 <!--		<module>job</module>-->
 		<module>service</module>
 		<module>business</module>
 	</modules>
+	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
