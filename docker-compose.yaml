@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    image: idoco138/rest-api-2
+    image: idoco138/rest_api-project
     env_file:
       - .env
     environment:
@@ -21,6 +21,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
 #  pgadmin:
 #    image: dpage/pgadmin4
 #    depends_on:
