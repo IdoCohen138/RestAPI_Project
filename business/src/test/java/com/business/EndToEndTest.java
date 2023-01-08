@@ -5,6 +5,7 @@ import com.pack.*;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -40,6 +41,7 @@ import java.util.stream.Stream;
 @SpringBootConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+
 public class EndToEndTest {
 
     RestTemplate restTemplate;

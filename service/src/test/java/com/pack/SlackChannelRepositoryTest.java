@@ -3,6 +3,7 @@ package com.pack;
 import com.pack.exceptions.ChannelNotExitsInDataBaseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.io.IOException;
@@ -30,12 +32,12 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+
 @EntityScan(basePackages = {"com.pack"})
 @ComponentScan(basePackages = {"com.pack"})
 @EnableAutoConfiguration
 @SpringBootConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class})
-
 public class SlackChannelRepositoryTest {
     SlackChannel slackChannel;
 

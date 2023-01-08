@@ -4,17 +4,19 @@ services:
     image: idoco138/rest_api-project
     env_file:
       - .env
+    container_name: rest_api-project
     environment:
       - DB_HOST=${POSTGRES_HOST}
       - DB_PORT=${POSTGRES_PORT}
       - DB_USERNAME=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "8080:8080"
+      - 8080:8080
     depends_on:
       - postgres
   postgres:
     image: idoco138/database
+    container_name: database
     env_file:
       - .env
     environment:
@@ -22,7 +24,9 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5433:5432"
+      - 5433:5432
+
+
 #  pgadmin:
 #    image: dpage/pgadmin4
 #    depends_on:
