@@ -10,13 +10,29 @@ services:
       - DB_PORT=${POSTGRES_PORT}
       - DB_USERNAME=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - SERVER_PORT_RESTAPI=${SERVER_PORT_RESTAPI}
     ports:
       - 8080:8080
     depends_on:
       - postgres
+  api_job:
+    image: idoco138/rest_api_job-project
+    env_file:
+      - .env
+    container_name: rest_api_job-project
+    environment:
+      - DB_HOST=${POSTGRES_HOST}
+      - DB_PORT=${POSTGRES_PORT}
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - SERVER_PORT_JOB=${SERVER_PORT_JOB}
+    ports:
+      - 8081:8081
+    depends_on:
+      - postgres
   postgres:
     image: idoco138/database
-    container_name: database
+    container_name: postgres_database
     env_file:
       - .env
     environment:
@@ -26,15 +42,3 @@ services:
     ports:
       - 5433:5432
 
-
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    depends_on:
-#      - postgres
-#    env_file:
-#      - .env
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: ${POSTGRES_USER}@admin.com
-#      PGADMIN_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD}
-#    ports:
-#       - "80:80"
