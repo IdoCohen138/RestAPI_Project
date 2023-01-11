@@ -11,6 +11,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -76,6 +78,12 @@ public class Client {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(urlWithStatus, HttpMethod.GET, entity, new ParameterizedTypeReference<List<SlackChannel>>() {
         });
+
+    }
+    public void deleteAll(UUID id) {
+        HttpEntity<JSONObject> entity = new HttpEntity<>(headers);
+        UriComponents uriComponent = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/"+id).build();
+        restTemplate.exchange(uriComponent.toUri(), HttpMethod.DELETE, entity, String.class);
 
     }
 }
