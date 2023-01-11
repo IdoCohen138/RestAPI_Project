@@ -3,7 +3,6 @@ package com.pack;
 import com.pack.exceptions.SlackMessageNotSentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,16 +17,13 @@ public class SlackIntegration {
     @Autowired
     MessageRepository messageRepository;
 
-    @Qualifier("slackRepository")
     @Autowired
-    SlackRepository slackRepository;
+    Persistent slackRepository;
 
 //    @Scheduled(cron = "0 0 10 * * *")
     public void sendPeriodicMessages() {
-        Specification<SlackChannel> spec = (root, query, builder) ->
-                builder.equal(root.get("status"), EnumStatus.ENABLED);
 
-        for (SlackChannel slackChannel : slackRepository.findAll(spec)) {
+        for (SlackChannel slackChannel : slackRepository.getAllChannelsbyStatus(EnumStatus.ENABLED)) {
             try {
                 String message = "You have no vulnerabilities";
                 messageSender.sendMessage(slackChannel, message);

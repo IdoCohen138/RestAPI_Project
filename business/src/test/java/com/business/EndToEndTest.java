@@ -5,8 +5,8 @@ import com.pack.*;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.*;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import com.utils.Client;
@@ -18,9 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -36,7 +33,7 @@ import java.util.stream.Stream;
 
 
 @EntityScan(basePackageClasses = {LogMessagePrimaryKey.class, LogMessages.class, SlackChannel.class})
-@ComponentScan(basePackageClasses = {SlackRepository.class, MessageRepository.class})
+@ComponentScan(basePackageClasses = {ISlackJpaRepository.class, MessageRepository.class})
 @EnableAutoConfiguration
 @SpringBootConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class})
@@ -75,8 +72,11 @@ public class EndToEndTest {
         uriComponentsWithID = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/{id}").build();
         uriComponentsWithStatus = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/").query("status={status}").build();
         myClient = new Client(url.toURI(), headers, restTemplate, uriComponentsWithID.toUri(), uriComponentsWithStatus.toUri());
-
+        deleteAllDataBase();
     }
+
+
+
     public static void runDockerComposeUp() {
         // command to run
         String command = "docker-compose up";
@@ -181,6 +181,12 @@ public class EndToEndTest {
         slackChannel.setWebhook(webhook);
         slackChannel.setStatus(EnumStatus.ENABLED);
 
+    }
+    private void deleteAllDataBase() {
+        List<SlackChannel> arraylist=myClient.getAllChannels().getBody();
+        for (int i=0;i<arraylist.size();i++){
+            myClient.deleteAll(arraylist.get(i).getId());
+        }
     }
 
 }

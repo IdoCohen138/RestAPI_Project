@@ -14,7 +14,7 @@ public class ApplicationJob {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ApplicationJob.class, args);
-        SlackIntegration slackIntegration = context.getBean(SlackIntegration.class);
-        slackIntegration.sendPeriodicMessages();
+//        SlackIntegration slackIntegration = context.getBean(SlackIntegration.class);
+//        slackIntegration.sendPeriodicMessages();
     }
 }

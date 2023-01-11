@@ -31,7 +31,7 @@ public class SlackIntegrationTest {
     @Mock
     MessageRepository messageRepository;
     @Mock
-    SlackRepository slackRepository;
+    Persistent slackRepository;
 
     @Mock
     MessageSender messageSender;
@@ -53,7 +53,7 @@ public class SlackIntegrationTest {
 
     @Test
     public void sendPeriodicMessagesTestSuccess() throws SlackMessageNotSentException {
-        Mockito.when(slackRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
+        Mockito.when(slackRepository.getAllChannelsbyStatus(EnumStatus.ENABLED)).thenReturn(slackChannels);
 //        Mockito.when(messageSender.sendMessage(slackChannel,"You have no vulnerabilities")).th;
 
         slackIntegration.sendPeriodicMessages();
@@ -63,7 +63,7 @@ public class SlackIntegrationTest {
 
     @Test
     public void sendPeriodicMessagesTestFail() throws  SlackMessageNotSentException {
-        Mockito.when(slackRepository.findAll((Specification<SlackChannel>) any())).thenReturn(slackChannels);
+        Mockito.when(slackRepository.getAllChannelsbyStatus(EnumStatus.ENABLED)).thenReturn(slackChannels);
         SlackMessageNotSentException exception = new SlackMessageNotSentException("Message didn't send to slack");
         Mockito.when(messageSender.sendMessage(slackChannel,"You have no vulnerabilities")).thenThrow(exception);
         slackIntegration.sendPeriodicMessages();

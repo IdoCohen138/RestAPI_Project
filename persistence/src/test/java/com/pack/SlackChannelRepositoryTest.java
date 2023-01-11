@@ -1,5 +1,7 @@
 package com.pack;
 
+import com.pack.*;
+import com.pack.exceptions.ChannelAlreadyExitsInDataBaseException;
 import com.pack.exceptions.ChannelNotExitsInDataBaseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,8 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -18,9 +23,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -39,12 +44,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class})
 public class SlackChannelRepositoryTest {
+
+
     SlackChannel slackChannel;
 
-    @Autowired @Qualifier("slackRepository")
-    SlackRepository channelSlackRepository;
+    @Autowired
+    Persistent persistent;
 
     List<SlackChannel> slackChannels;
+
+
 
     public static Stream<Arguments> enumStatus() {
 
@@ -55,68 +64,70 @@ public class SlackChannelRepositoryTest {
     }
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, ChannelNotExitsInDataBaseException {
         slackChannel = createSlackChannel();
         slackChannels = new ArrayList<>();
+        deleteAllDataBase();
     }
 
+
     @Test
-    void createChannelTestSuccess()  {
-        assertEquals(0, channelSlackRepository.findAll().size());
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
+    void createChannelTestSuccess() throws ChannelNotExitsInDataBaseException {
+
+        assertEquals(0, persistent.getAllChannels().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
         slackChannels.add(slackChannel);
-        assertEquals(channelSlackRepository.findAll(), slackChannels);
-        SlackChannel addedChannel = channelSlackRepository.findById(slackChannel.getId()).get();
+        assertEquals(persistent.getAllChannels(), slackChannels);
+        SlackChannel addedChannel = persistent.getChannelbyID(slackChannel.getId());
         assertNotNull((addedChannel.getCreated_at()));
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
     }
 
     @Test
     void CreateChannelAlreadyExistFail() throws  IOException {
-        assertDoesNotThrow(() -> channelSlackRepository.saveAndFlush(slackChannel));
+        assertEquals(0, persistent.getAllChannels().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
         SlackChannel duplicate = createSlackChannel();
-        assertThrows(DataIntegrityViolationException.class, () -> channelSlackRepository.saveAndFlush(duplicate));
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertThrows(ChannelAlreadyExitsInDataBaseException.class, () ->  persistent.saveChannel(duplicate));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
     }
 
     @Test
     void deleteChannelTestSuccess() {
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
-        assertEquals(0, channelSlackRepository.findAll().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
+        assertEquals(0, persistent.getAllChannels().size());
     }
 
     @Test
-    void getSpecificChannelTestSuccess() {
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
-        SlackChannel channelReturn = channelSlackRepository.getById(slackChannel.getId());
+    void getSpecificChannelTestSuccess() throws ChannelNotExitsInDataBaseException {
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
+        SlackChannel channelReturn = persistent.getChannelbyID(slackChannel.getId());
         assertNotNull(channelReturn);
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
     }
 
     @Test
     void getSpecificChannel_no_slack_channel_to_get_TestFail() {
-        assertEquals(channelSlackRepository.findAll().size(), 0);
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            channelSlackRepository.getById(slackChannel.getId());
+        assertEquals(0, persistent.getAllChannels().size());
+        assertThrows(ChannelNotExitsInDataBaseException.class, () -> {
+            persistent.getChannelbyID(slackChannel.getId());
         });
     }
 
     @ParameterizedTest
     @MethodSource("enumStatus")
     void getChannels_byFilter_TestSuccess(EnumStatus status1, EnumStatus status2) {
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
-        assertDoesNotThrow(() -> channelSlackRepository.updateChannel(slackChannel.getId(), status1));
+        assertEquals(0, persistent.getAllChannels().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
+        assertDoesNotThrow(() -> persistent.updateChannel(slackChannel.getId(), status1));
         slackChannel.setStatus(status1);
-        Specification<SlackChannel> spec = (root, query, builder) ->
-                builder.equal(root.get("status"), status1);
-        List<SlackChannel> slackChannelreturn =
-                assertDoesNotThrow(() -> channelSlackRepository.findAll(spec));
+        List<SlackChannel> slackChannelreturn=persistent.getAllChannelsbyStatus(status1);
         slackChannels.add(slackChannel);
         assertEquals(slackChannelreturn, slackChannels);
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
 
 
@@ -125,18 +136,15 @@ public class SlackChannelRepositoryTest {
     @ParameterizedTest
     @MethodSource("enumStatus")
     void getChannels_byFilter_enable_return_nothing_TestSuccess(EnumStatus status1, EnumStatus status2) {
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
-        assertDoesNotThrow(() -> channelSlackRepository.updateChannel(slackChannel.getId(), status1));
-        slackChannel.setStatus(status1);
-        Specification<SlackChannel> spec = (root, query, builder) ->
-                builder.equal(root.get("status"), status2);
-
+        assertEquals(0, persistent.getAllChannels().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
+        assertDoesNotThrow(() -> persistent.updateChannel(slackChannel.getId(), status1));
         List<SlackChannel> slackChannelreturn =
-                assertDoesNotThrow(() -> channelSlackRepository.findAll(spec));
+                assertDoesNotThrow(() -> persistent.getAllChannelsbyStatus(status2));
         slackChannels.add(slackChannel);
         assertNotEquals(slackChannelreturn, slackChannels);
         assertEquals(slackChannelreturn.size(), 0);
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
 
     }
@@ -144,12 +152,13 @@ public class SlackChannelRepositoryTest {
 
     @Test
     void getAllChannelsTestSuccess() {
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
+        assertEquals(0, persistent.getAllChannels().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
         slackChannels.add(slackChannel);
         List<SlackChannel> slackChannelreturn_enable =
-                assertDoesNotThrow(() -> channelSlackRepository.findAll());
+                assertDoesNotThrow(() -> persistent.getAllChannels());
         assertEquals(slackChannelreturn_enable, slackChannels);
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
 
 
@@ -157,7 +166,8 @@ public class SlackChannelRepositoryTest {
 
     @Test
     void getAllChannels_return_nothing_TestSuccess() {
-        List<SlackChannel> slackChannelreturn = channelSlackRepository.findAll();
+        assertEquals(0, persistent.getAllChannels().size());
+        List<SlackChannel> slackChannelreturn = persistent.getAllChannels();
         assertEquals(slackChannelreturn, slackChannels);
     }
 
@@ -165,16 +175,15 @@ public class SlackChannelRepositoryTest {
     @ParameterizedTest
     @MethodSource("enumStatus")
     public void updateChannelStatusTestSuccess(EnumStatus status1, EnumStatus status2) throws ChannelNotExitsInDataBaseException {
-        assertDoesNotThrow(() -> channelSlackRepository.save(slackChannel));
-        assertDoesNotThrow(() -> channelSlackRepository.updateChannel(slackChannel.getId(), status1));
+        assertEquals(0, persistent.getAllChannels().size());
+        assertDoesNotThrow(() -> persistent.saveChannel(slackChannel));
+        assertDoesNotThrow(() -> persistent.updateChannel(slackChannel.getId(), status1));
         slackChannel.setStatus(status1);
         slackChannels.add(slackChannel);
-        SlackChannel addedChannel = channelSlackRepository.findById(slackChannel.getId()).get();
-
+        SlackChannel addedChannel = persistent.getChannelbyID(slackChannel.getId());
         assertEquals(addedChannel.getStatus(), slackChannel.getStatus());
         assertNotNull((addedChannel.getModified_at()));
-
-        assertDoesNotThrow(() -> channelSlackRepository.delete(slackChannel));
+        assertDoesNotThrow(() -> persistent.deleteChannel(slackChannel.getId()));
         slackChannels.remove(slackChannel);
     }
 
@@ -196,4 +205,12 @@ public class SlackChannelRepositoryTest {
         properties.load(inputStream);
         return properties.getProperty("webhook_message_api");
     }
+
+    private void deleteAllDataBase() throws ChannelNotExitsInDataBaseException {
+        List<SlackChannel> arraylist=persistent.getAllChannels();
+        for (int i=0;i<arraylist.size();i++){
+            persistent.deleteChannel(arraylist.get(i).getId());
+        }
+    }
+
 }

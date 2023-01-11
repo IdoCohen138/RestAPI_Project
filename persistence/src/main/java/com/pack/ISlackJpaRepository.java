@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-@Component("slackRepository")
-public interface SlackRepository extends JpaRepository<SlackChannel, UUID> {
+@Component("ISlackJpaRepository")
+
+public interface ISlackJpaRepository extends JpaRepository<SlackChannel, UUID> {
 
     @Transactional
     @Modifying
@@ -24,3 +25,4 @@ public interface SlackRepository extends JpaRepository<SlackChannel, UUID> {
 
     List<SlackChannel> findAll(Specification<SlackChannel> spec);
 }
+
