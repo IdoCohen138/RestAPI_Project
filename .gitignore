@@ -13,10 +13,10 @@ target/
 .springBeans
 .sts4-cache
 
-src/test/resources/config.properties
-
-
-### IntelliJ IDEA ###
+Service/src/test/resources/config.properties
+Persistence/src/test/resources/config.properties
+Job/src/test/resources/config.properties
+Business/src/test/resources/config.properties### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
