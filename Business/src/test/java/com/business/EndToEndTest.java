@@ -32,10 +32,13 @@ public class EndToEndTest {
     UriComponents uriComponentsWithStatus;
     private Client myClient;
 
+    private static String docker_compose_path;
+
     private static Stream<Arguments> webhooks() throws IOException {
         InputStream inputStream = EndToEndTest.class.getClassLoader().getResourceAsStream("config.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
+        docker_compose_path=properties.getProperty("docker_compose_path");
         String webhook_message_api = properties.getProperty("webhook_message_api");
         String webhook_message_api_2 = properties.getProperty("webhook_message_api_2");
         return Stream.of(Arguments.of(webhook_message_api, "starship"), Arguments.of(webhook_message_api_2, "starship2"));
@@ -63,7 +66,7 @@ public class EndToEndTest {
     public static void setDown() throws IOException {
         String[] commandStop = {"cmd", "/c", "docker-compose", "-f", "docker-compose.yaml", "down"};
         ProcessBuilder builderStop = new ProcessBuilder(commandStop);
-        builderStop.directory(new File("C:\\Users\\liork\\IdeaProjects\\RestAPI_Project"));
+        builderStop.directory(new File(docker_compose_path));
         Process processStop = builderStop.start();
         BufferedReader readerStop = new BufferedReader(new InputStreamReader(processStop.getInputStream()));
         String lineStop;
@@ -79,7 +82,7 @@ public class EndToEndTest {
     public  void runDockerComposeUp() throws IOException, InterruptedException {
         String[] command = {"cmd", "/c", "docker-compose", "-f", "docker-compose.yml", "up", "-d"};
         ProcessBuilder builder = new ProcessBuilder(command);
-        builder.directory(new File("C:\\Users\\liork\\IdeaProjects\\RestAPI_Project"));
+        builder.directory(new File(docker_compose_path));
         Process process = builder.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
