@@ -2,13 +2,8 @@ package com.business;
 
 
 import com.pack.*;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
+import org.junit.jupiter.api.AfterAll;
 import org.springframework.http.*;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import com.utils.Client;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
@@ -17,27 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-
-@EntityScan(basePackageClasses = {LogMessagePrimaryKey.class, LogMessages.class, SlackChannel.class})
-@ComponentScan(basePackageClasses = {ISlackJpaRepository.class, MessageRepository.class})
-@EnableAutoConfiguration
-@SpringBootConfiguration
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 
 public class EndToEndTest {
 
@@ -62,7 +44,7 @@ public class EndToEndTest {
     @SneakyThrows
     @BeforeEach
     public void setup() {
-//        runDockerComposeUp();
+        runDockerComposeUp();
         restTemplate = new RestTemplate();
         url = new URL("http://localhost:8080/channels");
         headers = new HttpHeaders();
@@ -72,35 +54,46 @@ public class EndToEndTest {
         uriComponentsWithID = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/{id}").build();
         uriComponentsWithStatus = UriComponentsBuilder.newInstance().scheme("http").host("localhost").port(8080).path("channels/").query("status={status}").build();
         myClient = new Client(url.toURI(), headers, restTemplate, uriComponentsWithID.toUri(), uriComponentsWithStatus.toUri());
+        waitFor() ;
         deleteAllDataBase();
+
     }
 
-
-
-    public static void runDockerComposeUp() {
-        // command to run
-        String command = "docker-compose up";
-
-        try {
-            // execute the command
-            Process process = Runtime.getRuntime().exec(command);
-
-            // get the input stream and read the output
-            InputStream inputStream = process.getInputStream();
-            String output = new BufferedReader(new InputStreamReader(inputStream))
-                    .lines()
-                    .collect(Collectors.joining("\n"));
-
-            // print the output
-            System.out.println(output);
-        } catch (Exception e) {
-            e.printStackTrace();
+    @AfterAll
+    public static void setDown() throws IOException {
+        String[] commandStop = {"cmd", "/c", "docker-compose", "-f", "docker-compose.yaml", "down"};
+        ProcessBuilder builderStop = new ProcessBuilder(commandStop);
+        builderStop.directory(new File("C:\\Users\\liork\\IdeaProjects\\RestAPI_Project"));
+        Process processStop = builderStop.start();
+        BufferedReader readerStop = new BufferedReader(new InputStreamReader(processStop.getInputStream()));
+        String lineStop;
+        while ((lineStop = readerStop.readLine()) != null) {
+            System.out.println(lineStop);
         }
+        readerStop.close();
     }
+
+
+
+
+    public  void runDockerComposeUp() throws IOException, InterruptedException {
+        String[] command = {"cmd", "/c", "docker-compose", "-f", "docker-compose.yml", "up", "-d"};
+        ProcessBuilder builder = new ProcessBuilder(command);
+        builder.directory(new File("C:\\Users\\liork\\IdeaProjects\\RestAPI_Project"));
+        Process process = builder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+
+    }
+
+
 
     @ParameterizedTest
     @MethodSource("webhooks")
-    public void endToEndTestSuccess(String webhook, String channelName) throws IOException {
+    public void endToEndTestSuccess(String webhook, String channelName) throws IOException, InterruptedException {
         checkForEmptySlackChannelTable();
         createAndPostSlackChannel(webhook, channelName);
         updateStatusDisabled();
@@ -187,6 +180,18 @@ public class EndToEndTest {
         for (int i=0;i<arraylist.size();i++){
             myClient.deleteAll(arraylist.get(i).getId());
         }
+    }
+    private void waitFor() throws InterruptedException {
+        boolean isready=false;
+        while (!isready){
+            try {
+                myClient.getAllChannels().getBody();
+            } catch (Exception  e) {
+                Thread.sleep(1000);
+                continue;
+            }
+            isready=true;}
+
     }
 
 }

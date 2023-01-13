@@ -50,8 +50,8 @@
 			<version>2.10.4</version>
 		</dependency>
 		<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
 	</dependencies>
@@ -68,4 +68,4 @@
 		</plugins>
 	</build>
 
-            </project>
+</project>
