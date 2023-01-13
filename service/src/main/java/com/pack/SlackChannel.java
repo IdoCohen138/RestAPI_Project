@@ -20,7 +20,7 @@ import java.util.UUID;
 @Table(name = "slackchannel", schema = "public", catalog = "postgres")
 public class SlackChannel implements Serializable {
 
-    @OneToMany(mappedBy = "slackChannel", cascade = CascadeType.PERSIST ,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "slackChannel", cascade = CascadeType.PERSIST)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<LogMessages> logMessages = new HashSet<>();

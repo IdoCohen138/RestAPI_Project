@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    image: idoco138/rest_api-project
+    image: liorkob/rest_api-project
     env_file:
       - .env
     container_name: rest_api-project
@@ -16,7 +16,7 @@ services:
     depends_on:
       - postgres
   api_job:
-    image: idoco138/rest_api_job-project
+    image: liorkob/job
     env_file:
       - .env
     container_name: rest_api_job-project
@@ -31,7 +31,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: idoco138/database
+    image: liorkob/database
     container_name: postgres_database
     env_file:
       - .env
@@ -41,4 +41,3 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - 5433:5432
-

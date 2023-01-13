@@ -48,7 +48,6 @@ public class SlackJpaRepository implements Persistent {
         SlackChannel slackChannel;
         try {
             slackChannel = Repository.findById(id).get();
-            slackChannel.getLogMessages().clear();
             Repository.delete(slackChannel);
         } catch (NoSuchElementException e) {
             throw new ChannelNotExitsInDataBaseException("This channel not exits in the database");
