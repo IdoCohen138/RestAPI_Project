@@ -80,7 +80,7 @@ public class EndToEndTest {
 
 
     public  void runDockerComposeUp() throws IOException, InterruptedException {
-        String[] command = {"cmd", "/c", "docker-compose", "-f", "docker-compose.yml", "up", "-d"};
+        String[] command = {"cmd", "/c", "docker-compose", "-f", "docker-compose.yaml", "up", "-d"};
         ProcessBuilder builder = new ProcessBuilder(command);
         builder.directory(new File(docker_compose_path));
         Process process = builder.start();
