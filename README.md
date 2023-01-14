@@ -24,6 +24,8 @@ this files need to be in the same location path that the TestE2E.py file locatio
 ### Modules Test:
 you need to download "TestModules.py" script from "Script_Test-Modules" folder.(dont clone the repository, the script do it for you)
 Requierments for this script:
+1. run database container:  
+**docker run -p 5433:5432 -e POSTGRES_PASSWORD=YOUR_PASSWORD -d database_container**
 1. set a "config.properties" file
 2. set a ".env" file for Modules Test  
 this files need to be in the same location path that the TestModules.py file location.
