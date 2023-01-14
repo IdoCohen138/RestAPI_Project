@@ -13,7 +13,16 @@ Requerment for script:
 - do not clone the repository, the script do it for you.  
 - download two folders "Script_Test-E2E" and "Script_Test-Modules" to your pc.  
 
- **to download specific folder from github repository you can use this tool: https://download-directory.github.io/**
+ **to download specific folder from github repository you can use this tool: https://download-directory.github.io/**  
+ copy this url for Script_Test-E2E and paste in tool:  
+ ```
+ https://github.com/IdoCohen138/RestAPI_Project/tree/main/SCRIPT/Script_Test-E2E
+ ```  
+ copy this url for Script_Test-Modules and paste in tool:  
+ ```
+ https://github.com/IdoCohen138/RestAPI_Project/tree/main/SCRIPT/Script_Test-Modules
+ ```
+
 - change the variable inside each script named "path_to_your_location" to your script path location in your local pc.  
 
 for example in "TestE2E.py" file:
@@ -29,17 +38,18 @@ run the "TestE2E.py" script from "Script_Test-E2E" folder after you read instrac
 Requierments for this script:
 1. set a "config.properties" file
 2. set a ".env" file for E2E Test  
-this files need to be in the same location path that the TestE2E.py file location.
+this files need to be in the same location path that the TestE2E.py file location.  
+3. run TestE2E.py
 
 ### Modules Test:  
 run the "TestModules.py" script from "Script_Test-Modules" folder after you read instractions below  
 Requierments for this script:
 1. run database container:  
 **docker run -p 5433:5432 -e POSTGRES_PASSWORD=YOUR_PASSWORD_TO_POSTGRES -d database_container**
-1. set a "config.properties" file
-2. set a ".env" file for Modules Test  
-this files need to be in the same location path that the TestModules.py file location.
-
+2. set a "config.properties" file
+3. set a ".env" file for Modules Test  
+this files need to be in the same location path that the TestModules.py file location.  
+4. run TestE2E.py
 
 #### config.properties file:   
 (for Modules Test you need only the webhook properties without "docker_compose_path propertie)
