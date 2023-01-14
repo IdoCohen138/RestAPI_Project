@@ -21,9 +21,9 @@ this files need to be in the same location path that the TestModules.py file loc
 
 #### config.properties file:
 ```
-webhook_message_api=WEBHOOK FOR "api-messages" channel
-webhook_message_api_2=WEBHOOK FOR "api-messages2" channel
-docker_compose_path=PATH_TO_YOUR_"RestAPI-Project"_FOLDER
+webhook_message_api=WEBHOOK FOR "api-messages" CHANNEL(example: https://hooks.slack.com/services/YYYYYYYYYYYYYYYYYYYYYYYYYYY/YYYYYYYYYYYYYYYYYY)
+webhook_message_api_2=WEBHOOK FOR "api-messages2" CHANNEL(example: https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXX)
+docker_compose_path=PATH_TO_YOUR_"RestAPI-Project"_FOLDER(example: C:\\Users\\Ido\\PycharmProjects\\SCRIPT\\Script_Test-E2E\\RestAPI_Project)
 ```
 #### .env file for E2E Test:
 ```
