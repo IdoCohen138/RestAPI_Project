@@ -9,6 +9,7 @@ Requerment for tests:
 - postgres account.
 
 Requerment for script:
+- python.
 - do not clone the repository, the script do it for you.  
 - download two folders "Script_Test-E2E" and "Script_Test-Modules" to your pc.  
 
