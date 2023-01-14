@@ -36,7 +36,7 @@ Requierments for this script:
 this files need to be in the same location path that the TestModules.py file location.
 
 
-#### config.properties file:
+#### config.properties file(for Modules Test you need only the webhook properties without "docker_compose_path propertie):
 ```
 webhook_message_api=WEBHOOK FOR "api-messages" CHANNEL(example: https://hooks.slack.com/services/YYYYYYYYYYYYYYYYYYYYYYYYYYY/YYYYYYYYYYYYYYYYYY)
 webhook_message_api_2=WEBHOOK FOR "api-messages2" CHANNEL(example: https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXX)
