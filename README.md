@@ -13,26 +13,26 @@ Requerment for script:
 - do not clone the repository, the script do it for you.  
 - download two folders "Script_Test-E2E" and "Script_Test-Modules" to your pc.  
 
- **to download specific folder from github repository you can use this tool: https://download-directory.github.io/**  
- copy this url for Script_Test-E2E and paste in tool:  
- ```
- https://github.com/IdoCohen138/RestAPI_Project/tree/main/SCRIPT/Script_Test-E2E
- ```  
- copy this url for Script_Test-Modules and paste in tool:  
- ```
- https://github.com/IdoCohen138/RestAPI_Project/tree/main/SCRIPT/Script_Test-Modules
- ```
+ > **to download specific folder from github repository you can use this tool: https://download-directory.github.io/**  
+ > copy this url for Script_Test-E2E and paste in tool:  
+ > ```
+ > https://github.com/IdoCohen138/RestAPI_Project/tree/main/SCRIPT/Script_Test-E2E
+ > ```  
+ > copy this url for Script_Test-Modules and paste in tool:  
+ > ```
+ > https://github.com/IdoCohen138/RestAPI_Project/tree/main/SCRIPT/Script_Test-Modules
+ > ```
 
 - change the variable inside each script named "path_to_your_location" to your script path location in your local pc.  
 
-for example in "TestE2E.py" file:
-```
-path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_Test-Modules"  
-```
-  or in "TestModules.py" file:
-```
-path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_Test-E2E"
-```
+> for example in "TestE2E.py" file:
+> ```
+> path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_Test-Modules"  
+> ```
+>  or in "TestModules.py" file:
+> ```
+> path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_Test-E2E"
+> ```
 ### EndToEnd Test:
 run the "TestE2E.py" script from "Script_Test-E2E" folder after you read instractions below  
 Requierments for this script:
