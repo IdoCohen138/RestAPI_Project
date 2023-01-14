@@ -4,6 +4,13 @@
 In the root directory RestAPI_Project you can found SCRIPT folder, inside you can found two test folder that contains the scripts:
 "Script_Test-E2E" and "Script_Test-Modules".
 
+Requerment for script:
+- do not clone the repository, the script do it for you.  
+- change the variable inside each script named "path_to_your_location" to your script path location in your local pc.
+```
+for example: path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_Test-Modules"
+```
+
 ### EndToEnd Test:
 you need to download "TestE2E.py" script from "Script_Test-E2E" folder.(dont clone the repository, the script do it for you)  
 Requierments for this script:
