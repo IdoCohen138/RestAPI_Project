@@ -4,6 +4,10 @@
 In the root directory RestAPI_Project you can found SCRIPT folder, inside you can found two test folder that contains the scripts:
 "Script_Test-E2E" and "Script_Test-Modules".
 
+Requerment for tests:
+- docker.
+- postgres account.
+
 Requerment for script:
 - do not clone the repository, the script do it for you.  
 - download two folders "Script_Test-E2E" and "Script_Test-Modules" to your pc.  
