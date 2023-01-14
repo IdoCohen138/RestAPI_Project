@@ -6,6 +6,9 @@ In the root directory RestAPI_Project you can found SCRIPT folder, inside you ca
 
 Requerment for script:
 - do not clone the repository, the script do it for you.  
+- download two folders "Script_Test-E2E" and "Script_Test-Modules" to your pc.  
+
+ **to download specific folder from github repository you can use this tool: https://download-directory.github.io/**
 - change the variable inside each script named "path_to_your_location" to your script path location in your local pc.
 ```
 for example: path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_Test-Modules"
