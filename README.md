@@ -1,33 +1,55 @@
 # RestAPI_Project
 
-Explain how to run the tests:
+## Explain how to run the tests:
+In the root directory RestAPI_Project you can found SCRIPT folder, inside you can found two test folder that contains the scripts:
+"Script_Test-E2E" and "Script_Test-Modules".
 
-1.Create a resources directory in the test package.
+### EndToEnd Test:
+you need to download "TestE2E.py" script from "Script_Test-E2E" folder.(dont clone the repository, the script do it for you)  
+Requierments for this script:
+1. set a "config.properties" file
+2. set a ".env" file for E2E Test  
+this files need to be in the same location path that the TestE2E.py file location.
 
-2.Make sure the directory is defined resources directory. 
-file -> Project Structure -> Modules -> click on the directory src\test\resources and mark the directory as "Test Recources" then click "ok".
-
-2.Create a "config.properties" file into recources directory.(This file should be in gitigonre)
-
-3.Set two properties like this:
-
-webhook_message_api=*INSERT_VALUE_1*
-webhook_message_api_2=*INSERT_VALUE_2*
-where INSERT_VALUE_1 is the webhook of "api-messages" channel that you can found it from our app slack,
-and INSERT_VALUE_2 is the webhook of "api-messages2" channel.
-for example your "config.properties" should look like this:
-webhook_message_api=https://hooks.slack.com/services/XXXXXXXXXX/XXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXX
-webhook_message_api_2=https://hooks.slack.com/services/YYYYYYYYYY/YYYYYYYYYYY/YYYYYYYYYYYYYYYYYYYY
-
-  you can get the webhook from this link:
-  https://api.slack.com/apps
-  a.get in to our App
-  b.in the left side, under "Features" you can found "Incoming Webhooks" scroll down and you can copy the Webhook URL.
-  
-4.Thats it, now you can run EndToEndTest, IntegrationTest and SendMessageIntegrationTest.
+### Modules Test:
+you need to download "TestModules.py" script from "Script_Test-Modules" folder.(dont clone the repository, the script do it for you)
+Requierments for this script:
+1. set a "config.properties" file
+2. set a ".env" file for Modules Test  
+this files need to be in the same location path that the TestModules.py file location.
 
 
-> ## Docker Compose
+#### config.properties file:
+```
+webhook_message_api=WEBHOOK FOR "api-messages" channel
+webhook_message_api_2=WEBHOOK FOR "api-messages2" channel
+docker_compose_path=PATH_TO_YOUR_"RestAPI-Project"_FOLDER
+```
+#### .env file for E2E Test:
+```
+POSTGRES_USER=YOUR_USER
+POSTGRES_PASSWORD=YOUR_PASSWORD
+POSTGRES_DB=postgres
+POSTGRES_HOST=postgres_database
+POSTGRES_PORT=5432
+SERVER_PORT_JOB=8081
+SERVER_PORT_RESTAPI=8080
+COMPOSE_FILE=docker-compose.yaml
+```
+#### .env file for Modules Test:
+```
+POSTGRES_USER=YOUR_USER
+POSTGRES_PASSWORD=YOUR_PASSWORD
+POSTGRES_DB=postgres
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5433
+SERVER_PORT_JOB=8081
+SERVER_PORT_RESTAPI=8080
+COMPOSE_FILE=docker-compose.yaml
+```
+
+
+## Docker Compose
 
 configure `.env` file :
 ``` 
