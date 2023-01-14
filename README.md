@@ -15,14 +15,14 @@ for example: path_to_your_location="C:/Users/Ido/PycharmProjects/SCRIPT/Script_T
 ```
 
 ### EndToEnd Test:
-run the "TestE2E.py" script from "Script_Test-E2E" folder after you read instractions below:
+run the "TestE2E.py" script from "Script_Test-E2E" folder after you read instractions below  
 Requierments for this script:
 1. set a "config.properties" file
 2. set a ".env" file for E2E Test  
 this files need to be in the same location path that the TestE2E.py file location.
 
 ### Modules Test:  
-run the "TestModules.py" script from "Script_Test-Modules" folder after you read instractions below:
+run the "TestModules.py" script from "Script_Test-Modules" folder after you read instractions below  
 Requierments for this script:
 1. run database container:  
 **docker run -p 5433:5432 -e POSTGRES_PASSWORD=YOUR_PASSWORD_TO_POSTGRES -d database_container**
