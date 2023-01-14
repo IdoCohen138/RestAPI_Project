@@ -9,7 +9,7 @@ os.system("git clone https://github.com/IdoCohen138/RestAPI_Project.git")
 
 
 # Navigate to the business module
-os.chdir(path_to_your_location+"/RestAPI_Project/business")
+os.chdir(path_to_your_location+"/RestAPI_Project/Business")
 
 # Copy the config.properties file
 shutil.copy2(path_to_your_location + "/config.properties", "src/test/resources/")
