@@ -80,34 +80,3 @@ SERVER_PORT_JOB=8081
 SERVER_PORT_RESTAPI=8080
 COMPOSE_FILE=docker-compose.yaml
 ```
-
-
-## Docker Compose
-
-configure `.env` file :
-``` 
-# API 
-
-# POSTGRES
-POSTGRES_USER=username
-POSTGRES_PASSWORD=password
-POSTGRES_DB=channels
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-
-# PGADMIN
-
-```
-
-cd to the [root dir](.) run the command: 
-```
-docker-compose up -d --build
-```
-
-You should have now a network with the containers:
-
-1. [api](http://localhost:8080/)
-2. [postgres](http://localhost:5432/)
-3. [pgadmin](http://localhost:80/)
-
-
